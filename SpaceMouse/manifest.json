@@ -1,0 +1,7 @@
+{
+  "name": "SpaceMouse",
+  "id": "771203492956793224",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html"
+}
