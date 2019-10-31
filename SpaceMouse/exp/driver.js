@@ -1,3 +1,46 @@
+class Vector2D {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  get magnitude() {
+    return Math.hypot(this.x, this.y);
+  }
+
+  scaleToMagnitude(magnitude) {
+    if (this.magnitude === 0) {
+      return new Vector2D(0, 0);
+    } else {
+      const scaleFactor = magnitude / this.magnitude;
+      return new Vector2D(this.x * scaleFactor, this.y * scaleFactor);
+    }
+  }
+
+  scaleToFactor(factor) {
+    return new Vector2D(this.x * factor, this.y * factor);
+  }
+
+  add(vector, maxMagnitude = Infinity) {
+    let netX = this.x + vector.x;
+    let netY = this.y + vector.y;
+    const newMagnitude = Math.hypot(netX, netY);
+    if (newMagnitude > maxMagnitude) {
+      netX = (netX * maxMagnitude) / newMagnitude;
+      netY = (netY * maxMagnitude) / newMagnitude;
+    }
+    return new Vector2D(netX, netY);
+  }
+
+  toString() {
+    return `<x: ${this.x}, y: ${this.y}>`;
+  }
+
+  toObject() {
+    return { x: this.x, y: this.y };
+  }
+}
+
 /**
  * Gamepad API wrapper for the SpaceNavigator axes
  */
@@ -39,7 +82,8 @@ class PhysicsEngine {
   constructor() {
     this.previousTime = null;
     this.spaceNavigator = new SpaceNavigator();
-    this.velocity = { x: 0, y: 0 };
+    this.velocity = new Vector2D(0, 0);
+    this.zoom = 1;
     this.friction = 0.2;
     window.requestAnimationFrame(() => this.step());
   }
@@ -48,23 +92,31 @@ class PhysicsEngine {
     const nowTime = performance.now();
     const delta = nowTime - this.previousTime;
     this.previousTime = nowTime;
-    // console.log(delta);
-    const [fX, _1, _2, _3, _4, _5] = this.spaceNavigator.getAxes();
+    const [fX, fY, fZ, _3, _4, _5] = this.spaceNavigator.getAxes();
 
-    if (fX > 0) {
-      this.velocity.x = Math.min(10, this.velocity.x + fX);
-    } else if (fX < 0) {
-      this.velocity.x = Math.max(-10, this.velocity.x + fX);
+    const mouseForce = new Vector2D(fX, fY);
+
+    if (mouseForce.magnitude > 0) {
+      this.velocity = this.velocity.add(mouseForce, 10);
     } else {
-      this.velocity.x = Math.abs(this.velocity.x) > 0.1 ? this.velocity.x / delta : 0;
+      if (this.velocity.magnitude > 0.1) {
+        this.velocity = this.velocity.scaleToFactor(1 / delta);
+      } else {
+        this.velocity = this.velocity.scaleToMagnitude(0);
+      }
     }
 
-    // console.dir(this.velocity.x * delta);
-    const deltaX = this.velocity.x * delta;
-    parent.postMessage({ pluginMessage: { type: 'mouse-update', deltaX } }, '*');
+    const translation = this.velocity.scaleToFactor(delta * 0.5);
+
+    parent.postMessage({ pluginMessage: { type: 'mouse-update', x: translation.x, y: translation.y } }, '*');
 
     window.requestAnimationFrame(() => this.step());
   }
 }
 
 new PhysicsEngine();
+
+document.addEventListener('mousewheel', function(event) {
+  console.log('scroll hijack');
+  event.preventDefault();
+});
