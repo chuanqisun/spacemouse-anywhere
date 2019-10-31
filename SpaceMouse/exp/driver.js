@@ -35,16 +35,36 @@ class SpaceNavigator {
 /**
  * calculating speed and translation at each tick
  */
-class PhysicsEngine {}
+class PhysicsEngine {
+  constructor() {
+    this.previousTime = null;
+    this.spaceNavigator = new SpaceNavigator();
+    this.velocity = { x: 0, y: 0 };
+    this.friction = 0.2;
+    window.requestAnimationFrame(() => this.step());
+  }
 
-const spaceNavigator = new SpaceNavigator();
+  step() {
+    const nowTime = performance.now();
+    const delta = nowTime - this.previousTime;
+    this.previousTime = nowTime;
+    // console.log(delta);
+    const [fX, _1, _2, _3, _4, _5] = this.spaceNavigator.getAxes();
 
-var start = null;
-var element = document.getElementById('SomeElementYouWantToAnimate');
+    if (fX > 0) {
+      this.velocity.x = Math.min(10, this.velocity.x + fX);
+    } else if (fX < 0) {
+      this.velocity.x = Math.max(-10, this.velocity.x + fX);
+    } else {
+      this.velocity.x = Math.abs(this.velocity.x) > 0.1 ? this.velocity.x / delta : 0;
+    }
 
-function step(timestamp) {
-  console.log(spaceNavigator.getAxes());
-  window.requestAnimationFrame(step);
+    // console.dir(this.velocity.x * delta);
+    const deltaX = this.velocity.x * delta;
+    parent.postMessage({ pluginMessage: { type: 'mouse-update', deltaX } }, '*');
+
+    window.requestAnimationFrame(() => this.step());
+  }
 }
 
-window.requestAnimationFrame(step);
+new PhysicsEngine();
