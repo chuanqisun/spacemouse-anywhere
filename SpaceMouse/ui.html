@@ -1,11 +1,13 @@
-<code>Device status: connected</code>
-<div class="viz">
-  <div class="translation-meter">
-    <div class="translation-meter__circle"></div>
+<div class="ui">
+  <div class="viz">
+    <div class="translation-meter">
+      <div class="translation-meter__circle"></div>
+    </div>
+    <div class="zoom-meter">
+      <div class="zoom-meter__bar"></div>
+    </div>
   </div>
-  <div class="zoom-meter">
-    <div class="zoom-meter__bar"></div>
-  </div>
+  <code>Device status: connected</code>
 </div>
 <style>
   :root {
@@ -13,9 +15,16 @@
     --y: 0px;
     --z: 0px;
   }
+  .ui {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    height: 100%;
+    align-items: center;
+  }
   .viz {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    justify-items: center;
   }
   .translation-meter {
     width: 100px;
