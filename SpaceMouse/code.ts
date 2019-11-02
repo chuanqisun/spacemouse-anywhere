@@ -7,15 +7,18 @@ figma.ui.onmessage = msg => {
   // One way of distinguishing between different types of messages sent from
   // your HTML page is to use an object with a "type" property like this.
   if (msg.type === 'mouse-update') {
-    figma.viewport.zoom = figma.viewport.zoom * msg.zoom;
+    if (msg.zoom !== 1) {
+      figma.viewport.zoom = figma.viewport.zoom * msg.zoom;
+    }
 
-    let { x, y } = figma.viewport.center;
-    x = x + msg.x / figma.viewport.zoom;
-    y = y + msg.y / figma.viewport.zoom;
-    figma.viewport.center = { x, y };
+    const { x, y } = figma.viewport.center;
+    const newX = x + msg.x / figma.viewport.zoom;
+    const newY = y + msg.y / figma.viewport.zoom;
+
+    if (newX !== x || newY !== y) {
+      figma.viewport.center = { x: newX, y: newY };
+    }
   }
-
-  // console.log(figma.viewport.zoom);
 
   // Make sure to close the plugin when you're done. Otherwise the plugin will
   // keep running, which shows the cancel button at the bottom of the screen.
