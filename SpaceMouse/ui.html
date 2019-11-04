@@ -1,13 +1,63 @@
 <div class="ui">
   <div class="viz">
-    <div class="translation-meter">
-      <div class="translation-meter__circle"></div>
+    <div class="viz-cell">
+      <div class="viz-label">Panning</div>
+      <div class="translation-meter">
+        <div class="translation-meter__circle"></div>
+      </div>
     </div>
-    <div class="zoom-meter">
-      <div class="zoom-meter__bar"></div>
+    <div class="viz-cell">
+      <div class="viz-label">Zooming</div>
+      <div class="zoom-meter">
+        <div class="zoom-meter__bar"></div>
+      </div>
     </div>
   </div>
-  <code>Device status: connected</code>
+  <div class="footer">
+    <button id="open-preferences">Preferences</button>
+    <div id="status">Unknown</div>
+  </div>
+  <div id="preferences-form">
+    <div class="field">
+      <label>
+        <div class="field-title">Invert X</div>
+        <input name="invertX" type="checkbox"
+      /></label>
+    </div>
+    <div class="field">
+      <label>
+        <div class="field-title">Invert Y</div>
+        <input name="invertY" type="checkbox"
+      /></label>
+    </div>
+    <div class="field field--full-width">
+      <label>
+        <div class="field-title">Panning Speed</div>
+        <input name="panSensitivity" type="range" list="tickmarks" value="0" min="-4" max="4"
+      /></label>
+    </div>
+    <div class="field field--full-width">
+      <label>
+        <div class="field-title">Zooming Speed</div>
+        <input name="zoomSensitivity" type="range" list="tickmarks" value="0" min="-4" max="4"
+      /></label>
+    </div>
+    <datalist id="tickmarks">
+      <option value="-4"></option>
+      <option value="-3"></option>
+      <option value="-2"></option>
+      <option value="-1"></option>
+      <option value="0"></option>
+      <option value="1"></option>
+      <option value="2"></option>
+      <option value="3"></option>
+      <option value="4"></option>
+    </datalist>
+    <div class="actions">
+      <button id="close-preferences">Done</button>
+      <button id="reset-preferences">Reset</button>
+    </div>
+  </div>
 </div>
 <style>
   :root {
@@ -15,16 +65,97 @@
     --y: 0px;
     --z: 0px;
   }
+
+  button {
+    background-color: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    border-radius: 6px;
+    height: 30px;
+  }
+  input[type='checkbox'] {
+    margin: 0;
+    width: 16px;
+    height: 16px;
+  }
+  input[type='checkbox']::after {
+    content: 'Off';
+    font-size: 11px;
+    color: rgba(0, 0, 0, 0.8);
+    margin-left: 20px;
+    position: relative;
+    top: 2px;
+  }
+  input[type='checkbox']:checked::after {
+    content: 'On';
+  }
+
+  input[type='range'] {
+    position: relative;
+    width: calc(100% - 40px);
+  }
+
+  input[type='range']::after {
+    font-size: 11px;
+    color: rgba(0, 0, 0, 0.8);
+    content: attr(value);
+    position: absolute;
+    top: 4px;
+    right: -22px;
+  }
+
   .ui {
     display: grid;
-    grid-template-rows: 1fr auto;
+    grid-template-rows: 100px 1fr;
     height: 100%;
     align-items: center;
+    font: normal 400 11px/16px Inter, Roboto, sans-serif;
+    padding: 8px;
+    box-sizing: border-box;
+  }
+  #preferences-form {
+    display: none;
+    will-change: display;
+    background-color: white;
+    padding: 16px;
+  }
+  #preferences-form.active {
+    display: grid;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 40px 40px 1fr;
+    grid-gap: 16px;
+  }
+
+  .field-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .actions {
+    align-self: end;
+    grid-template-columns: auto auto;
+    display: grid;
+    grid-gap: 8px;
   }
   .viz {
     display: grid;
     grid-template-columns: 1fr 1fr;
     justify-items: center;
+    grid-gap: 4px;
+  }
+  .viz-cell {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .viz-label {
+    font-weight: 600;
+    width: 100%;
+    text-align: left;
   }
   .translation-meter {
     width: 100px;
@@ -58,6 +189,15 @@
     background-color: #333;
     top: 50%;
     transform: translateY(calc(var(--z)));
+  }
+  .footer {
+    align-self: end;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  #status {
+    color: #aaa;
   }
 </style>
 <script>
@@ -108,18 +248,31 @@
    * Gamepad API wrapper for the SpaceNavigator axes
    */
   class SpaceNavigator {
-    constructor() {
-      navigator.getGamepads(); // first call to trigger connection
-
-      this.spaceNavigator = this.getSpaceNavigator();
+    getData() {
+      const { status, axes } = this._update();
+      return { status, axes };
     }
 
-    getAxes() {
-      const spaceNavigator = this.getSpaceNavigator();
-      return spaceNavigator && spaceNavigator.axes ? spaceNavigator.axes : [0, 0, 0, 0, 0, 0];
+    _update() {
+      const spaceNavigator = this._getSpaceNavigator();
+      let { status, axes } = { status: '', axes: [0, 0, 0, 0, 0, 0] };
+
+      if (spaceNavigator && spaceNavigator.axes) {
+        axes = spaceNavigator.axes;
+        if (axes.every(item => item === 0)) {
+          status = 'Idle';
+        } else {
+          status = 'Active';
+        }
+      } else {
+        axes = [0, 0, 0, 0, 0, 0];
+        status = 'Disconnected';
+      }
+
+      return { status, axes };
     }
 
-    getSpaceNavigator() {
+    _getSpaceNavigator() {
       const gamepadList = [...navigator.getGamepads()];
       return gamepadList.find(gamepad => this.isSpaceMouse(gamepad));
     }
@@ -144,38 +297,37 @@
   class PhysicsEngine {
     constructor() {
       this.previousTime = null;
-      this.spaceNavigator = new SpaceNavigator();
       this.velocity = new Vector2D(0, 0);
       this.zoomMultiplier = 1;
       this.friction = 0.2;
-      window.requestAnimationFrame(() => this.update());
+      this.preferences = {
+        invertX: false,
+        invertY: false,
+        panSensitivity: 0,
+        zoomSensitivity: 0,
+      };
     }
 
-    update() {
+    update([fX, fY, fZ]) {
       const nowTime = performance.now();
       const delta = nowTime - this.previousTime;
       this.previousTime = nowTime;
-      const [fX, fY, fZ] = this.spaceNavigator.getAxes();
-
-      this.updateVisualization(fX, fY, fZ);
 
       this.updateVelocity(delta, fX, fY);
       this.updateZoomMultiplier(delta, fZ);
 
       const translation = this.velocity.scaleToFactor(delta * 0.5);
       parent.postMessage(
-        { pluginMessage: { type: 'mouse-update', x: translation.x, y: translation.y, zoom: this.zoomMultiplier } },
+        {
+          pluginMessage: {
+            type: 'mouse-update',
+            x: translation.x,
+            y: translation.y,
+            zoom: this.zoomMultiplier,
+          },
+        },
         '*'
       );
-
-      window.requestAnimationFrame(() => this.update());
-    }
-
-    updateVisualization(fX, fY, fZ) {
-      const root = document.documentElement;
-      root.style.setProperty('--x', `${fX * 100}px`);
-      root.style.setProperty('--y', `${fY * 100}px`);
-      root.style.setProperty('--z', `${fZ * 50}px`);
     }
 
     updateVelocity(delta, fX, fY) {
@@ -204,10 +356,141 @@
     }
   }
 
-  new PhysicsEngine();
+  class UserInterface {
+    constructor() {
+      this.rootStyle = document.documentElement.style;
 
+      this.statusElement = document.getElementById('status');
+      this.preferencesFormElement = document.getElementById('preferences-form');
+      this.openPreferencesButton = document.getElementById('open-preferences');
+      this.closePreferencesButton = document.getElementById('close-preferences');
+
+      this.openPreferencesButton.addEventListener('click', () => this.preferencesFormElement.classList.add('active'));
+
+      this.closePreferencesButton.addEventListener('click', () =>
+        this.preferencesFormElement.classList.remove('active')
+      );
+
+      this.preferencesFormElement.addEventListener('change', e => {
+        this.updateValues(e);
+      });
+    }
+
+    usePreferences({ invertX, invertY, panSensitivity, zoomSensitivity }) {
+      const oldPreferences = this.getPreferences();
+      console.dir({ invertX, invertY, panSensitivity, zoomSensitivity });
+      if (invertX !== undefined && oldPreferences.invertX !== invertX) {
+        document.querySelector('[name="invertX"]').checked = invertX;
+      }
+      if (invertY !== undefined && oldPreferences.invertY !== invertY) {
+        document.querySelector('[name="invertY"]').checked = invertY;
+      }
+      if (panSensitivity !== undefined && oldPreferences.panSensitivity !== panSensitivity) {
+        document.querySelector('[name="panSensitivity"]').value = panSensitivity;
+        document
+          .querySelector('[name="panSensitivity"]')
+          .setAttribute('value', parseInt(panSensitivity) > 0 ? `+${panSensitivity}` : panSensitivity);
+      }
+      if (zoomSensitivity !== undefined && oldPreferences.zoomSensitivity !== zoomSensitivity) {
+        document.querySelector('[name="zoomSensitivity"]').value = zoomSensitivity;
+        document
+          .querySelector('[name="zoomSensitivity"]')
+          .setAttribute('value', parseInt(zoomSensitivity) > 0 ? `+${zoomSensitivity}` : zoomSensitivity);
+      }
+    }
+
+    getPreferences() {
+      return {
+        invertX: document.querySelector('[name="invertX"]').checked,
+        invertY: document.querySelector('[name="invertY"]').checked,
+        panSensitivity: document.querySelector('[name="panSensitivity"]').value,
+        zoomSensitivity: document.querySelector('[name="zoomSensitivity"]').value,
+      };
+    }
+
+    updateValues(e) {
+      const target = document.querySelector(`[name="${e.target.name}"]`);
+
+      // reflect property to value
+      if (e.target.type === 'range') {
+        target.setAttribute('value', parseInt(e.target.value) > 0 ? `+${e.target.value}` : e.target.value);
+      }
+
+      const preferences = this.getPreferences();
+
+      parent.postMessage(
+        {
+          pluginMessage: {
+            type: 'preferences-update',
+            preferences,
+          },
+        },
+        '*'
+      );
+    }
+
+    updateStatus(status) {
+      this.statusElement.innerText = status;
+    }
+
+    updateVisualization([fX, fY, fZ]) {
+      this.rootStyle.setProperty('--x', `${fX * 100}px`);
+      this.rootStyle.setProperty('--y', `${fY * 100}px`);
+      this.rootStyle.setProperty('--z', `${fZ * 50}px`);
+    }
+  }
+
+  class Application {
+    constructor() {
+      this.userInterface = new UserInterface();
+      this.spaceNavigator = new SpaceNavigator();
+      this.physicsEngine = new PhysicsEngine();
+
+      window.requestAnimationFrame(() => this.update());
+
+      this.requestPreferences();
+    }
+
+    usePreferences(preferences) {
+      this.userInterface.usePreferences(preferences);
+    }
+
+    requestPreferences() {
+      parent.postMessage(
+        {
+          pluginMessage: {
+            type: 'get-preferences',
+          },
+        },
+        '*'
+      );
+    }
+
+    update() {
+      const { status, axes } = this.spaceNavigator.getData();
+      const [fX, fY, fZ] = axes;
+
+      this.physicsEngine.update([fX, fY, fZ]);
+      this.userInterface.updateStatus(status);
+      this.userInterface.updateVisualization([fX, fY, fZ]);
+
+      window.requestAnimationFrame(() => this.update());
+    }
+  }
+
+  // By default tilt will be used for vertical scrolling. Prevent the default to avoid conflict gesture
   document.addEventListener('mousewheel', function(event) {
-    console.log('scroll hijack');
     event.preventDefault();
   });
+
+  const application = new Application();
+
+  onmessage = event => {
+    const msg = event.data.pluginMessage;
+    if (msg.type === 'preferences-available') {
+      if (msg.preferences) {
+        application.usePreferences(msg.preferences);
+      }
+    }
+  };
 </script>

@@ -5,7 +5,7 @@ figma.showUI(__html__);
 figma.ui.onmessage = msg => {
     // One way of distinguishing between different types of messages sent from
     // your HTML page is to use an object with a "type" property like this.
-    if (msg.type === 'mouse-update') {
+    if (msg.type === "mouse-update") {
         if (msg.zoom !== 1) {
             figma.viewport.zoom = figma.viewport.zoom * msg.zoom;
         }
@@ -15,6 +15,18 @@ figma.ui.onmessage = msg => {
         if (newX !== x || newY !== y) {
             figma.viewport.center = { x: newX, y: newY };
         }
+    }
+    if (msg.type === "preferences-update") {
+        console.log("[code] preferences written to storage");
+        figma.clientStorage.setAsync("preferences", msg.preferences);
+    }
+    if (msg.type === "get-preferences") {
+        figma.clientStorage.getAsync("preferences").then(preferences => {
+            figma.ui.postMessage({
+                type: "preferences-available",
+                preferences
+            });
+        });
     }
     // Make sure to close the plugin when you're done. Otherwise the plugin will
     // keep running, which shows the cancel button at the bottom of the screen.
