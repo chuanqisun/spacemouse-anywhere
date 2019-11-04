@@ -364,6 +364,7 @@
       this.preferencesFormElement = document.getElementById('preferences-form');
       this.openPreferencesButton = document.getElementById('open-preferences');
       this.closePreferencesButton = document.getElementById('close-preferences');
+      this.resetPreferencesButton = document.getElementById('reset-preferences');
 
       this.openPreferencesButton.addEventListener('click', () => this.preferencesFormElement.classList.add('active'));
 
@@ -371,14 +372,13 @@
         this.preferencesFormElement.classList.remove('active')
       );
 
-      this.preferencesFormElement.addEventListener('change', e => {
-        this.updateValues(e);
-      });
+      this.resetPreferencesButton.addEventListener('click', () => this.resetPreferences());
+
+      this.preferencesFormElement.addEventListener('change', e => this.updateValues(e));
     }
 
     usePreferences({ invertX, invertY, panSensitivity, zoomSensitivity }) {
       const oldPreferences = this.getPreferences();
-      console.dir({ invertX, invertY, panSensitivity, zoomSensitivity });
       if (invertX !== undefined && oldPreferences.invertX !== invertX) {
         document.querySelector('[name="invertX"]').checked = invertX;
       }
@@ -399,6 +399,17 @@
       }
     }
 
+    resetPreferences() {
+      this.usePreferences({
+        invertX: false,
+        invertY: false,
+        panSensitivity: 0,
+        zoomSensitivity: 0,
+      });
+
+      this.storePreferences();
+    }
+
     getPreferences() {
       return {
         invertX: document.querySelector('[name="invertX"]').checked,
@@ -416,6 +427,10 @@
         target.setAttribute('value', parseInt(e.target.value) > 0 ? `+${e.target.value}` : e.target.value);
       }
 
+      this.storePreferences();
+    }
+
+    storePreferences() {
       const preferences = this.getPreferences();
 
       parent.postMessage(
