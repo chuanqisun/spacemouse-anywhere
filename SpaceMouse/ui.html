@@ -478,7 +478,9 @@
     }
 
     updateStatus(status) {
-      this.statusElement.innerText = status;
+      if (this.statusElement.innerText !== status) {
+        this.statusElement.innerText = status;
+      }
     }
 
     updateVisualization([fX, fY, fZ]) {
