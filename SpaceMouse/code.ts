@@ -6,9 +6,9 @@ figma.showUI(__html__);
 figma.ui.onmessage = msg => {
   // One way of distinguishing between different types of messages sent from
   // your HTML page is to use an object with a "type" property like this.
-  if (msg.type === "mouse-update") {
-    if (msg.zoom !== 1) {
-      figma.viewport.zoom = figma.viewport.zoom * msg.zoom;
+  if (msg.type === 'mouse-update') {
+    if (msg.zoomMultiplier !== 1) {
+      figma.viewport.zoom = figma.viewport.zoom * msg.zoomMultiplier;
     }
 
     const { x, y } = figma.viewport.center;
@@ -20,16 +20,22 @@ figma.ui.onmessage = msg => {
     }
   }
 
-  if (msg.type === "preferences-update") {
-    console.log("[code] preferences written to storage");
-    figma.clientStorage.setAsync("preferences", msg.preferences);
+  if (msg.type === 'preferences-update') {
+    console.log('[code] preferences written to storage');
+    figma.clientStorage.setAsync('preferences', msg.preferences);
+
+    // post back the latest preferences
+    figma.ui.postMessage({
+      type: 'preferences-available',
+      preferences: msg.preferences,
+    });
   }
 
-  if (msg.type === "get-preferences") {
-    figma.clientStorage.getAsync("preferences").then(preferences => {
+  if (msg.type === 'get-preferences') {
+    figma.clientStorage.getAsync('preferences').then(preferences => {
       figma.ui.postMessage({
-        type: "preferences-available",
-        preferences
+        type: 'preferences-available',
+        preferences,
       });
     });
   }

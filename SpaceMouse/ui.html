@@ -299,12 +299,44 @@
       this.previousTime = null;
       this.velocity = new Vector2D(0, 0);
       this.zoomMultiplier = 1;
-      this.friction = 0.2;
       this.preferences = {
         invertX: false,
         invertY: false,
         panSensitivity: 0,
         zoomSensitivity: 0,
+      };
+    }
+
+    usePreferences(preferences) {
+      this.preferences = {
+        invertX: preferences.invertX,
+        invertY: preferences.invertY,
+        panSensitivity: parseInt(preferences.panSensitivity),
+        zoomSensitivity: parseInt(preferences.zoomSensitivity),
+      };
+    }
+
+    applyPreferences(translation, zoomMultiplier) {
+      let finalX = translation.x;
+      let finalY = translation.y;
+      let finalZoomMultiplier = zoomMultiplier;
+
+      if (this.preferences.invertX) {
+        finalX = -finalX;
+      }
+
+      if (this.preferences.invertY) {
+        finalY = -finalY;
+      }
+
+      finalX = finalX * (1 + this.preferences.panSensitivity / 5);
+      finalY = finalY * (1 + this.preferences.panSensitivity / 5);
+      finalZoomMultiplier = finalZoomMultiplier + ((finalZoomMultiplier - 1) * this.preferences.zoomSensitivity) / 5;
+
+      return {
+        x: finalX,
+        y: finalY,
+        zoomMultiplier: finalZoomMultiplier,
       };
     }
 
@@ -315,15 +347,16 @@
 
       this.updateVelocity(delta, fX, fY);
       this.updateZoomMultiplier(delta, fZ);
-
       const translation = this.velocity.scaleToFactor(delta * 0.5);
+
+      const { x, y, zoomMultiplier } = this.applyPreferences(translation, this.zoomMultiplier);
       parent.postMessage(
         {
           pluginMessage: {
             type: 'mouse-update',
-            x: translation.x,
-            y: translation.y,
-            zoom: this.zoomMultiplier,
+            x,
+            y,
+            zoomMultiplier,
           },
         },
         '*'
@@ -467,7 +500,9 @@
     }
 
     usePreferences(preferences) {
+      console.log('[ui] new preference available');
       this.userInterface.usePreferences(preferences);
+      this.physicsEngine.usePreferences(preferences);
     }
 
     requestPreferences() {
