@@ -284,10 +284,21 @@
     isSpaceMouse(gamepad) {
       if (!gamepad) return false;
       if (!gamepad.id) return false;
-      if (gamepad.id.indexOf('3Dconnexion Universal Receiver') < 0) return false;
+      if (!gamepad.axes) return false;
       if (gamepad.axes.length !== 6) return false;
 
-      return true;
+      const gamepadName = gamepad.id.toLowerCase();
+
+      // id filter is borrowed from https://github.com/arpruss/spacemouse-tinkercad/blob/master/spacenav.js
+      const isIdRecognized =
+        (gamepadName.indexOf('vendor: 046d') > -1 && gamepadName.indexOf('product: c6') > -1) ||
+        (gamepadName.indexOf('vendor: 256f') > -1 && gamepadName.indexOf('product: c6') > -1) ||
+        gamepadName.indexOf('spacenavigator') > -1 ||
+        gamepadName.indexOf('space navigator') > -1 ||
+        gamepadName.indexOf('spacemouse') > -1 ||
+        gamepadName.indexOf('space mouse') > -1;
+
+      return isIdRecognized;
     }
   }
 
