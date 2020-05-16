@@ -1,0 +1,145 @@
+:root {
+	--x: 0px;
+	--y: 0px;
+	--z: 0px;
+}
+
+button {
+	background-color: transparent;
+	border: 1px solid rgba(0, 0, 0, 0.8);
+	border-radius: 6px;
+	height: 30px;
+}
+input[type="checkbox"] {
+	margin: 0;
+	width: 16px;
+	height: 16px;
+}
+input[type="checkbox"]::after {
+	content: "Off";
+	font-size: 11px;
+	color: rgba(0, 0, 0, 0.8);
+	margin-left: 20px;
+	position: relative;
+	top: 2px;
+}
+input[type="checkbox"]:checked::after {
+	content: "On";
+}
+
+input[type="range"] {
+	position: relative;
+	width: calc(100% - 40px);
+}
+
+input[type="range"]::after {
+	font-size: 11px;
+	color: rgba(0, 0, 0, 0.8);
+	content: attr(value);
+	position: absolute;
+	top: 4px;
+	right: -22px;
+}
+
+.ui {
+	display: grid;
+	grid-template-rows: 100px 1fr;
+	height: 100%;
+	align-items: center;
+	font: normal 400 11px/16px Inter, Roboto, sans-serif;
+	padding: 8px;
+	box-sizing: border-box;
+}
+#preferences-form {
+	display: none;
+	will-change: display;
+	background-color: white;
+	padding: 16px;
+}
+#preferences-form.active {
+	display: grid;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 40px 40px 1fr;
+	grid-gap: 16px;
+}
+
+.field-title {
+	font-weight: 600;
+	margin-bottom: 8px;
+}
+.actions {
+	grid-column: 1/-1;
+	align-self: end;
+	grid-template-columns: auto auto 1fr;
+	align-items: flex-end;
+	display: grid;
+	grid-gap: 8px;
+}
+.viz {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	justify-items: center;
+	grid-gap: 4px;
+}
+.viz-cell {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.viz-label {
+	font-weight: 600;
+	width: 100%;
+	text-align: left;
+}
+.translation-meter {
+	width: 100px;
+	height: 100px;
+	border: 1px solid #ccc;
+	border-radius: 50%;
+	position: relative;
+}
+
+.translation-meter__circle {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	border: 1px solid #333;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(calc(var(--x) - 50%), calc(var(--y) - 50%));
+	will-change: transform;
+}
+.zoom-meter {
+	width: 10px;
+	height: 100px;
+	border: 1px solid #ccc;
+	position: relative;
+}
+.zoom-meter__bar {
+	position: absolute;
+	width: 100%;
+	height: 1px;
+	background-color: #333;
+	top: 50%;
+	transform: translateY(calc(var(--z)));
+}
+.footer {
+	align-self: end;
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-end;
+}
+#status {
+	color: #aaa;
+}
+.version {
+	text-align: end;
+	color: #aaa;
+}

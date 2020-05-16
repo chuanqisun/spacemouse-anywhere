@@ -1,0 +1,68 @@
+<div class="ui">
+	<div class="viz">
+		<div class="viz-cell">
+			<div class="viz-label">Panning</div>
+			<div class="translation-meter">
+				<div class="translation-meter__circle"></div>
+			</div>
+		</div>
+		<div class="viz-cell">
+			<div class="viz-label">Zooming</div>
+			<div class="zoom-meter">
+				<div class="zoom-meter__bar"></div>
+			</div>
+		</div>
+	</div>
+	<div class="footer">
+		<button id="open-preferences">Preferences</button>
+		<div id="status">Unknown</div>
+	</div>
+	<div id="preferences-form">
+		<div class="field">
+			<label>
+				<div class="field-title">Invert X</div>
+				<input name="invertX" type="checkbox"
+			/></label>
+		</div>
+		<div class="field">
+			<label>
+				<div class="field-title">Invert Y</div>
+				<input name="invertY" type="checkbox"
+			/></label>
+		</div>
+		<div class="field field--full-width">
+			<label>
+				<div class="field-title">Panning Speed</div>
+				<input name="panSensitivity" type="range" list="tickmarks" value="0" min="-4" max="4"
+			/></label>
+		</div>
+		<div class="field field--full-width">
+			<label>
+				<div class="field-title">Zooming Speed</div>
+				<input name="zoomSensitivity" type="range" list="tickmarks" value="0" min="-4" max="4"
+			/></label>
+		</div>
+		<datalist id="tickmarks">
+			<option value="-4"></option>
+			<option value="-3"></option>
+			<option value="-2"></option>
+			<option value="-1"></option>
+			<option value="0"></option>
+			<option value="1"></option>
+			<option value="2"></option>
+			<option value="3"></option>
+			<option value="4"></option>
+		</datalist>
+		<div class="actions">
+			<button id="close-preferences">Done</button>
+			<button id="reset-preferences">Reset</button>
+			<span class="version">v1.2.0</span>
+		</div>
+	</div>
+</div>
+<style>
+	/* inject-inline: /src/styles.css */
+</style>
+<script>
+	/* inject-inline: /dist/ui.js */
+</script>
