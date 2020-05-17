@@ -1,4 +1,6 @@
-figma.showUI(__html__);
+import { INIT_HEIGHT } from "./utils/sizes";
+
+figma.showUI(__html__, { height: INIT_HEIGHT });
 
 // Calls to "parent.postMessage" from within the HTML page will trigger this
 // callback. The callback will be passed the "pluginMessage" property of the

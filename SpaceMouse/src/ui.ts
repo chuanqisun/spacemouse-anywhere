@@ -10,3 +10,5 @@ onmessage = (event) => {
 		}
 	}
 };
+
+import "./index";
