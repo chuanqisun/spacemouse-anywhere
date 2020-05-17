@@ -1,13 +1,13 @@
 <div class="ui">
 	<div class="viz">
 		<div class="viz-cell">
-			<div class="viz-label">Panning</div>
+			<div class="viz-label">X / Y</div>
 			<div class="translation-meter">
 				<div class="translation-meter__circle"></div>
 			</div>
 		</div>
 		<div class="viz-cell">
-			<div class="viz-label">Zooming</div>
+			<div class="viz-label">Z</div>
 			<div class="zoom-meter">
 				<div class="zoom-meter__bar"></div>
 			</div>
@@ -18,25 +18,21 @@
 		<div id="status">Unknown</div>
 	</div>
 	<div id="preferences-form">
-		<div class="field">
-			<label>
-				<div class="field-title">Invert X</div>
-				<input name="invertX" type="checkbox"
-			/></label>
+		<div class="field full-width">
+			<div class="field-title">Manipulation mode</div>
+			<div class="columns">
+				<label class="radio-label"><input type="radio" id="taget-camera" name="manipulate" value="camera" checked />Camera</label>
+				<label class="radio-label"><input type="radio" id="target-object-2d" name="manipulate" value="object-2d" />2D Object</label>
+				<label class="radio-label"><input type="radio" id="target-object-3d" name="manipulate" value="object-3d" />3D Object</label>
+			</div>
 		</div>
 		<div class="field">
-			<label>
-				<div class="field-title">Invert Y</div>
-				<input name="invertY" type="checkbox"
-			/></label>
-		</div>
-		<div class="field field--full-width">
 			<label>
 				<div class="field-title">Panning Speed</div>
 				<input name="panSensitivity" type="range" list="tickmarks" value="0" min="-4" max="4"
 			/></label>
 		</div>
-		<div class="field field--full-width">
+		<div class="field">
 			<label>
 				<div class="field-title">Zooming Speed</div>
 				<input name="zoomSensitivity" type="range" list="tickmarks" value="0" min="-4" max="4"
@@ -73,6 +69,29 @@
 		border-radius: 6px;
 		height: 30px;
 	}
+
+	.columns {
+		display: grid;
+		grid-auto-flow: column;
+		gap: 16px;
+		justify-content: start;
+	}
+
+	.field.full-width {
+		grid-column: 1/-1;
+	}
+
+	.radio-label {
+		display: inline-flex;
+	}
+
+	input[type="radio"] {
+		margin: 0;
+		width: 16px;
+		height: 16px;
+		margin-right: 4px;
+	}
+
 	input[type="checkbox"] {
 		margin: 0;
 		width: 16px;
@@ -318,8 +337,7 @@
 			this.velocity = new Vector2D(0, 0);
 			this.zoomMultiplier = 1;
 			this.preferences = {
-				invertX: false,
-				invertY: false,
+				manipulationMode: false,
 				panSensitivity: 0,
 				zoomSensitivity: 0,
 			};
@@ -327,8 +345,7 @@
 
 		usePreferences(preferences) {
 			this.preferences = {
-				invertX: preferences.invertX,
-				invertY: preferences.invertY,
+				manipulationMode: preferences.manipulationMode,
 				panSensitivity: parseInt(preferences.panSensitivity),
 				zoomSensitivity: parseInt(preferences.zoomSensitivity),
 			};
@@ -339,12 +356,10 @@
 			let finalY = translation.y;
 			let finalZoomMultiplier = zoomMultiplier;
 
-			if (this.preferences.invertX) {
+			if (this.preferences.manipulationMode === "object-2d" || this.preferences.manipulationMode === "object-3d") {
 				finalX = -finalX;
-			}
-
-			if (this.preferences.invertY) {
 				finalY = -finalY;
+				finalZoomMultiplier = 1 + (1 - zoomMultiplier);
 			}
 
 			finalX = finalX * (1 + this.preferences.panSensitivity / 5);
@@ -362,6 +377,12 @@
 			const nowTime = performance.now();
 			const delta = nowTime - this.previousTime;
 			this.previousTime = nowTime;
+
+			if (this.preferences.manipulationMode === "object-3d") {
+				let t = fY;
+				fY = fZ;
+				fZ = -t;
+			}
 
 			this.updateVelocity(delta, fX, fY);
 			this.updateZoomMultiplier(delta, fZ);
@@ -426,13 +447,13 @@
 			this.preferencesFormElement.addEventListener("change", (e) => this.updateValues(e));
 		}
 
-		usePreferences({ invertX, invertY, panSensitivity, zoomSensitivity }) {
+		usePreferences({ manipulationMode, panSensitivity, zoomSensitivity }) {
 			const oldPreferences = this.getPreferences();
-			if (invertX !== undefined && oldPreferences.invertX !== invertX) {
-				document.querySelector('[name="invertX"]').checked = invertX;
-			}
-			if (invertY !== undefined && oldPreferences.invertY !== invertY) {
-				document.querySelector('[name="invertY"]').checked = invertY;
+
+			if (manipulationMode !== undefined && oldPreferences.manipulationMode !== manipulationMode) {
+				document.querySelector(`[name="manipulate"][value="camera"]`).checked = manipulationMode === "camera";
+				document.querySelector(`[name="manipulate"][value="object-2d"]`).checked = manipulationMode === "object-2d";
+				document.querySelector(`[name="manipulate"][value="object-3d"]`).checked = manipulationMode === "object-3d";
 			}
 			if (panSensitivity !== undefined && oldPreferences.panSensitivity !== panSensitivity) {
 				document.querySelector('[name="panSensitivity"]').value = panSensitivity;
@@ -446,8 +467,7 @@
 
 		resetPreferences() {
 			this.usePreferences({
-				invertX: false,
-				invertY: false,
+				manipulationMode: "camera",
 				panSensitivity: 0,
 				zoomSensitivity: 0,
 			});
@@ -456,9 +476,12 @@
 		}
 
 		getPreferences() {
+			let manipulationMode = "camera";
+			if (document.querySelector('[name="manipulate"][value="object-2d"').checked) manipulationMode = "object-2d";
+			if (document.querySelector('[name="manipulate"][value="object-3d"').checked) manipulationMode = "object-3d";
+
 			return {
-				invertX: document.querySelector('[name="invertX"]').checked,
-				invertY: document.querySelector('[name="invertY"]').checked,
+				manipulationMode,
 				panSensitivity: document.querySelector('[name="panSensitivity"]').value,
 				zoomSensitivity: document.querySelector('[name="zoomSensitivity"]').value,
 			};
@@ -496,6 +519,8 @@
 		}
 
 		updateVisualization([fX, fY, fZ]) {
+			const preferences = this.getPreferences();
+
 			this.rootStyle.setProperty("--x", `${fX * 100}px`);
 			this.rootStyle.setProperty("--y", `${fY * 100}px`);
 			this.rootStyle.setProperty("--z", `${fZ * 50}px`);
@@ -514,7 +539,7 @@
 		}
 
 		usePreferences(preferences) {
-			console.log("[ui] new preference available");
+			console.log("[ui] new preference available", preferences);
 			this.userInterface.usePreferences(preferences);
 			this.physicsEngine.usePreferences(preferences);
 		}
