@@ -1,7 +1,7 @@
-function buildCode(cb) {
-	const rollup = require("rollup");
-	const rollupTypescript = require("@rollup/plugin-typescript");
+const rollup = require("rollup");
+const rollupTypescript = require("@rollup/plugin-typescript");
 
+function buildCode(cb) {
 	return rollup
 		.rollup({
 			input: "./src/code.ts",
@@ -15,4 +15,4 @@ function buildCode(cb) {
 		.then(() => cb());
 }
 
-module.exports = buildCode;
+module.exports = { buildCode };

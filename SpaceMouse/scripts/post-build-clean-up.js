@@ -4,4 +4,4 @@ function postBuildCleanUp(cb) {
 	del("./dist/ui.js").then(() => cb());
 }
 
-module.exports = postBuildCleanUp;
+module.exports = { postBuildCleanUp };

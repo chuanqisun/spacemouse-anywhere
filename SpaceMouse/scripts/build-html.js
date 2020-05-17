@@ -1,11 +1,18 @@
-const buildHtmlFactory = ({ compress = false } = {}) => (cb) => {
-	const { inlineSource } = require("inline-source");
-	const path = require("path");
-	const htmlpath = path.resolve("src/ui.html");
-	const targetHtmlPath = path.resolve("dist/ui.html");
-	const fs = require("fs");
+const { inlineSource } = require("inline-source");
+const path = require("path");
+const htmlpath = path.resolve("src/ui.html");
+const targetHtmlPath = path.resolve("dist/ui.html");
+const fs = require("fs");
 
-	inlineSource(htmlpath, { compress }).then((html) => fs.writeFile(targetHtmlPath, html, cb));
+const buildHtmlFactory = ({ compress = false } = {}) => {
+	const buildHtml = (cb) => {
+		inlineSource(htmlpath, { compress }).then((html) => fs.writeFile(targetHtmlPath, html, cb));
+	};
+
+	return buildHtml;
 };
 
-module.exports = buildHtmlFactory;
+const buildHtmlDev = buildHtmlFactory();
+const buildHtmlProd = buildHtmlFactory({ compress: true });
+
+module.exports = { buildHtmlDev, buildHtmlProd };

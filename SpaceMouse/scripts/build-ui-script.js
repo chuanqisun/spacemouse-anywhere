@@ -1,7 +1,7 @@
-function buildUiScript(cb) {
-	const rollup = require("rollup");
-	const rollupTypescript = require("@rollup/plugin-typescript");
+const rollup = require("rollup");
+const rollupTypescript = require("@rollup/plugin-typescript");
 
+function buildUiScript(cb) {
 	rollup
 		.rollup({
 			input: "./src/ui.ts",
@@ -15,4 +15,4 @@ function buildUiScript(cb) {
 		.then(() => cb());
 }
 
-module.exports = buildUiScript;
+module.exports = { buildUiScript };
