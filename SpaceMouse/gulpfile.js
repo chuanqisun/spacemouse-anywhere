@@ -1,34 +1,10 @@
 const gulp = require("gulp");
-const rollup = require("rollup");
-const rollupTypescript = require("@rollup/plugin-typescript");
-const injectInline = require("@exuanbo/gulp-inject-inline");
+const { parallel, series, watch } = require("gulp");
 
-gulp.task("build:code.js", () => {
-	return rollup
-		.rollup({
-			input: "./src/code.ts",
-			plugins: [rollupTypescript()],
-		})
-		.then((bundle) => {
-			return bundle.write({
-				file: "./dist/code.js",
-			});
-		});
-});
+const buildCode = require("./scripts/build-code");
+const buildHtml = require("./scripts/build-html");
+const buildUiScript = require("./scripts/build-ui-script");
+const postBuildCleanUp = require("./scripts/post-build-clean-up");
 
-gulp.task("build:ui.js", () => {
-	return rollup
-		.rollup({
-			input: "./src/ui.ts",
-			plugins: [rollupTypescript()],
-		})
-		.then((bundle) => {
-			return bundle.write({
-				file: "./dist/ui.js",
-			});
-		});
-});
-
-gulp.task("inject", () => {
-	return gulp.src("src/ui.html").pipe(injectInline()).pipe(gulp.dest("dist"));
-});
+gulp.task("dev", () => watch("src/**/*", { ignoreInitial: false }, parallel(buildCode, series(buildUiScript, buildHtml(), postBuildCleanUp))));
+gulp.task("build", parallel(buildCode, series(buildUiScript, buildHtml({ compress: true }), postBuildCleanUp)));

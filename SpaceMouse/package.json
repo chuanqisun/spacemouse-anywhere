@@ -5,15 +5,18 @@
 	"main": "dist/code.js",
 	"description": "3Dconnexion SpaceMouse Driver",
 	"scripts": {
-		"gulp": "gulp"
+		"start": "gulp dev",
+		"build": "gulp build"
 	},
 	"author": "Chuanqi Sun",
 	"license": "MIT",
 	"devDependencies": {
-		"@exuanbo/gulp-inject-inline": "^1.1.1",
 		"@figma/plugin-typings": "^1.15.0",
 		"@rollup/plugin-typescript": "^4.1.1",
+		"del": "^5.1.0",
 		"gulp": "^4.0.2",
+		"gulp-inline-source": "^4.0.0",
+		"inline-source": "^7.2.0",
 		"rollup": "^2.10.2",
 		"tslib": "^2.0.0",
 		"typescript": "^3.9.2"
