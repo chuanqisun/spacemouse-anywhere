@@ -1,18 +1,18 @@
 const rollup = require("rollup");
 const rollupTypescript = require("@rollup/plugin-typescript");
 
-function buildCode(cb) {
+function buildMain(cb) {
 	return rollup
 		.rollup({
-			input: "./src/code.ts",
+			input: "./src/main.ts",
 			plugins: [rollupTypescript()],
 		})
 		.then((bundle) => {
 			return bundle.write({
-				file: "./dist/code.js",
+				file: "./dist/main.js",
 			});
 		})
 		.then(() => cb());
 }
 
-module.exports = { buildCode };
+module.exports = { buildMain };

@@ -1,6 +1,6 @@
 import { UserInterface } from "./user-interface";
-import { SpaceNavigator } from "./space-navigator";
-import { PhysicsEngine } from "./physics-engine";
+import { SpaceNavigator } from "./core/space-navigator";
+import { PhysicsEngine } from "./core/physics-engine";
 
 export class Application {
 	private userInterface = new UserInterface();

@@ -4,6 +4,10 @@
 	--z: 0px;
 }
 
+body {
+	margin: 0;
+}
+
 button {
 	background-color: transparent;
 	border: 1px solid rgba(0, 0, 0, 0.8);

@@ -1,4 +1,5 @@
 import { Vector2D } from "./vector-2d";
+import { MessageTypes, updateMouse } from "./messages";
 
 /**
  * calculating speed and translation at each tick
@@ -57,17 +58,12 @@ export class PhysicsEngine {
 		const translation = this.velocity.scaleToFactor(delta * 0.5);
 
 		const { x, y, zoomMultiplier } = this.applyPreferences(translation, this.zoomMultiplier);
-		parent.postMessage(
-			{
-				pluginMessage: {
-					type: "mouse-update",
-					x,
-					y,
-					zoomMultiplier,
-				},
-			},
-			"*"
-		);
+
+		updateMouse({
+			x,
+			y,
+			zoomMultiplier,
+		});
 	}
 
 	updateVelocity(delta, fX, fY) {
