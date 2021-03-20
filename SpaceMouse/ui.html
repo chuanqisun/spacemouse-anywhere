@@ -18,12 +18,18 @@
 		<div id="status">Unknown</div>
 	</div>
 	<div id="preferences-form">
-		<div class="field full-width">
-			<div class="field-title">Manipulation mode</div>
-			<div class="columns">
-				<label class="radio-label"><input type="radio" id="taget-camera" name="manipulate" value="camera" checked />Camera</label>
-				<label class="radio-label"><input type="radio" id="target-object-2d" name="manipulate" value="object-2d" />2D Object</label>
-				<label class="radio-label"><input type="radio" id="target-object-3d" name="manipulate" value="object-3d" />3D Object</label>
+		<div class="field">
+			<div class="field-title field-title--pad-below">Perspective</div>
+			<div class="radio-options">
+				<label class="radio-label"><input type="radio" id="perspective-2d" name="perspective" value="2d" checked />2D</label>
+				<label class="radio-label"><input type="radio" id="perspective-2d" name="perspective" value="3d" />3D</label>
+			</div>
+		</div>
+		<div class="field">
+			<div class="field-title">manipulation target</div>
+			<div class="radio-options">
+				<label class="radio-label"><input type="radio" id="manipulation-scene" name="manipulation" value="scene" />Scene</label>
+				<label class="radio-label"><input type="radio" id="manipulation-camera" name="manipulation" value="camera" checked />Camera</label>
 			</div>
 		</div>
 		<div class="field">
@@ -77,12 +83,14 @@
 		justify-content: start;
 	}
 
-	.field.full-width {
-		grid-column: 1/-1;
+	.radio-options {
+		margin-top: 4px;
+		display: grid;
+		gap: 4px;
 	}
 
 	.radio-label {
-		display: inline-flex;
+		display: flex;
 	}
 
 	input[type="radio"] {
@@ -145,15 +153,15 @@
 		left: 0;
 		right: 0;
 		bottom: 0;
-		grid-template-columns: 1fr 1fr;
-		grid-template-rows: 40px 40px 1fr;
-		grid-gap: 16px;
+		grid-template:
+		"field-1 field-2" 68px
+		"field-3 field-4" 60px / 1fr 1fr; 
 	}
 
 	.field-title {
 		font-weight: 600;
-		margin-bottom: 8px;
 	}
+
 	.actions {
 		grid-column: 1/-1;
 		align-self: end;
@@ -227,6 +235,8 @@
 	}
 </style>
 <script>
+	const MIN_ACTIVATION_FORCE = 0.015;
+
 	class Vector2D {
 		constructor(x, y) {
 			this.x = x;
@@ -259,6 +269,10 @@
 				netY = (netY * maxMagnitude) / newMagnitude;
 			}
 			return new Vector2D(netX, netY);
+		}
+
+		negate() {
+			return new Vector2D(-this.x, -this.y);
 		}
 
 		toString() {
@@ -337,7 +351,8 @@
 			this.velocity = new Vector2D(0, 0);
 			this.zoomMultiplier = 1;
 			this.preferences = {
-				manipulationMode: false,
+				manipulation: false,
+				perspective: false,
 				panSensitivity: 0,
 				zoomSensitivity: 0,
 			};
@@ -345,7 +360,8 @@
 
 		usePreferences(preferences) {
 			this.preferences = {
-				manipulationMode: preferences.manipulationMode,
+				manipulation: preferences.manipulation,
+				perspective: preferences.perspective,
 				panSensitivity: parseInt(preferences.panSensitivity),
 				zoomSensitivity: parseInt(preferences.zoomSensitivity),
 			};
@@ -356,7 +372,7 @@
 			let finalY = translation.y;
 			let finalZoomMultiplier = zoomMultiplier;
 
-			if (this.preferences.manipulationMode === "object-2d" || this.preferences.manipulationMode === "object-3d") {
+			if (this.preferences.manipulation === "scene") {
 				finalX = -finalX;
 				finalY = -finalY;
 				finalZoomMultiplier = 1 + (1 - zoomMultiplier);
@@ -378,7 +394,7 @@
 			const delta = nowTime - this.previousTime;
 			this.previousTime = nowTime;
 
-			if (this.preferences.manipulationMode === "object-3d") {
+			if (this.preferences.perspective === "3d") {
 				let t = fY;
 				fY = fZ;
 				fZ = -t;
@@ -405,22 +421,20 @@
 		updateVelocity(delta, fX, fY) {
 			const mouseForce = new Vector2D(fX, fY);
 
-			if (mouseForce.magnitude > 0) {
-				// this.velocity = this.velocity.add(mouseForce, 5);
-				this.velocity = mouseForce.scaleToFactor(20);
+			if (mouseForce.magnitude > MIN_ACTIVATION_FORCE) {
+				const activationThreshold = mouseForce.scaleToMagnitude(MIN_ACTIVATION_FORCE);
+				const netForce = mouseForce.add(activationThreshold.negate());
+
+				this.velocity = netForce.scaleToFactor(20);
 			} else {
-				if (this.velocity.magnitude > 0.1) {
-					this.velocity = this.velocity.scaleToFactor(1 / delta);
-				} else {
 					this.velocity = this.velocity.scaleToMagnitude(0);
-				}
 			}
 		}
 
 		updateZoomMultiplier(delta, fZ) {
-			if (fZ > 0) {
+			if (fZ > MIN_ACTIVATION_FORCE) {
 				this.zoomMultiplier = Math.min(1 + fZ / 10, 1.05);
-			} else if (fZ < 0) {
+			} else if (fZ < -MIN_ACTIVATION_FORCE) {
 				this.zoomMultiplier = Math.max(1 + fZ / 8, 0.92);
 			} else {
 				this.zoomMultiplier = 1;
@@ -447,18 +461,46 @@
 			this.preferencesFormElement.addEventListener("change", (e) => this.updateValues(e));
 		}
 
-		usePreferences({ manipulationMode, panSensitivity, zoomSensitivity }) {
+		get perspective() {
+			return (document.querySelector(`[name="perspective"][value="2d"]`).checked ? "2d" : "3d");
+		}
+
+		get manipulation() {
+			return (document.querySelector(`[name="manipulation"][value="scene"]`).checked ? "scene" : "camera");
+		}
+
+		set perspective(mode) {
+			if (mode === "2d") {
+				document.querySelector(`[name="perspective"][value="2d"]`).checked = true;
+			} else {
+				document.querySelector(`[name="perspective"][value="3d"]`).checked = true;
+			}
+		}
+
+		set manipulation(mode) {
+			if (mode === "scene") {
+				document.querySelector(`[name="manipulation"][value="scene"]`).checked = true;
+			} else {
+				document.querySelector(`[name="manipulation"][value="camera"]`).checked = true;
+			}
+		}
+
+		usePreferences({ manipulation, perspective, panSensitivity, zoomSensitivity }) {
 			const oldPreferences = this.getPreferences();
 
-			if (manipulationMode !== undefined && oldPreferences.manipulationMode !== manipulationMode) {
-				document.querySelector(`[name="manipulate"][value="camera"]`).checked = manipulationMode === "camera";
-				document.querySelector(`[name="manipulate"][value="object-2d"]`).checked = manipulationMode === "object-2d";
-				document.querySelector(`[name="manipulate"][value="object-3d"]`).checked = manipulationMode === "object-3d";
+			if (manipulation !== undefined && oldPreferences.manipulation !== manipulation) {
+				this.manipulation = manipulation;
 			}
+
+			if (perspective !== undefined && oldPreferences.perspective !== perspective) {
+				this.perspective = perspective;
+			}
+
 			if (panSensitivity !== undefined && oldPreferences.panSensitivity !== panSensitivity) {
 				document.querySelector('[name="panSensitivity"]').value = panSensitivity;
 				document.querySelector('[name="panSensitivity"]').setAttribute("value", parseInt(panSensitivity) > 0 ? `+${panSensitivity}` : panSensitivity);
 			}
+
 			if (zoomSensitivity !== undefined && oldPreferences.zoomSensitivity !== zoomSensitivity) {
 				document.querySelector('[name="zoomSensitivity"]').value = zoomSensitivity;
 				document.querySelector('[name="zoomSensitivity"]').setAttribute("value", parseInt(zoomSensitivity) > 0 ? `+${zoomSensitivity}` : zoomSensitivity);
@@ -467,7 +509,8 @@
 
 		resetPreferences() {
 			this.usePreferences({
-				manipulationMode: "camera",
+				manipulation: "scene",
+				perspective: "2d",
 				panSensitivity: 0,
 				zoomSensitivity: 0,
 			});
@@ -476,12 +519,12 @@
 		}
 
 		getPreferences() {
-			let manipulationMode = "camera";
-			if (document.querySelector('[name="manipulate"][value="object-2d"').checked) manipulationMode = "object-2d";
-			if (document.querySelector('[name="manipulate"][value="object-3d"').checked) manipulationMode = "object-3d";
+			const manipulation = this.manipulation;
+			const perspective = this.perspective;
 
 			return {
-				manipulationMode,
+				manipulation,
+				perspective,
 				panSensitivity: document.querySelector('[name="panSensitivity"]').value,
 				zoomSensitivity: document.querySelector('[name="zoomSensitivity"]').value,
 			};
