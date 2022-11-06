@@ -154,8 +154,8 @@
 		right: 0;
 		bottom: 0;
 		grid-template:
-		"field-1 field-2" 68px
-		"field-3 field-4" 60px / 1fr 1fr; 
+			"field-1 field-2" 68px
+			"field-3 field-4" 60px / 1fr 1fr;
 	}
 
 	.field-title {
@@ -427,7 +427,7 @@
 
 				this.velocity = netForce.scaleToFactor(20);
 			} else {
-					this.velocity = this.velocity.scaleToMagnitude(0);
+				this.velocity = this.velocity.scaleToMagnitude(0);
 			}
 		}
 
@@ -462,11 +462,11 @@
 		}
 
 		get perspective() {
-			return (document.querySelector(`[name="perspective"][value="2d"]`).checked ? "2d" : "3d");
+			return document.querySelector(`[name="perspective"][value="2d"]`).checked ? "2d" : "3d";
 		}
 
 		get manipulation() {
-			return (document.querySelector(`[name="manipulation"][value="scene"]`).checked ? "scene" : "camera");
+			return document.querySelector(`[name="manipulation"][value="scene"]`).checked ? "scene" : "camera";
 		}
 
 		set perspective(mode) {
