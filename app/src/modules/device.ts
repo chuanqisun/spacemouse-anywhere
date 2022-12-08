@@ -13,11 +13,11 @@ export enum GamepadStatus {
 
 export type GamepadAxes = [
   translateX: number, // Left=-1, Right=1
-  translateZ: number, //Forward, Backward
-  translateY: number, // Up, Down
+  translateY: number, //Forward, Backward
+  translateZ: number, // Up, Down
   rotateX: number, // Pitch up, Pitch down
-  rotateZ: number, // Roll right, Roll light
-  rotateY: number // Yaw left, Yaw right
+  rotateY: number, // Roll right, Roll light
+  rotateZ: number // Yaw left, Yaw right
 ];
 
 export const getGamepadSnapshot: Poller = (selectGamepad: (gamepad: Gamepad | null) => boolean) => {

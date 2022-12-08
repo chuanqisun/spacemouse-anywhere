@@ -3,27 +3,29 @@ import { GamepadSnapshot, GamepadStatus } from "./device";
 export interface Motion {
   zoom: number;
   rotate: number;
-  pan: number;
+  panX: number;
+  panY: number;
 }
 
 export function getMotion(interval: number, snapshot: GamepadSnapshot): Motion {
   const { status, axes } = snapshot;
-  const [_translateX, translateZ, _translateY] = axes;
+  const [devX, devY, devZ] = axes;
 
   if (status === GamepadStatus.Active) {
     console.log({ axes, interval });
-    console.log("Z velocity", -1 * translateZ * interval);
 
     return {
-      zoom: -1 * translateZ * interval,
+      zoom: devY * interval * 5,
       rotate: 0,
-      pan: 0,
+      panX: devX * interval * 5,
+      panY: devZ * interval * 5,
     };
   }
 
   return {
     zoom: 0,
     rotate: 0,
-    pan: 0,
+    panX: 0,
+    panY: 0,
   };
 }
