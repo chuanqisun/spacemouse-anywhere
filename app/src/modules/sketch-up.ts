@@ -1,11 +1,46 @@
 import { Motion } from "./kinetics";
 
+declare global {
+  interface Window {
+    Module: SketchUpWebApi;
+  }
+}
+
+export interface SketchUpWebApi {
+  mouseButtonHandler(button: MouseButton, action: MouseButtonAction, x: number, y: number): any;
+  onKeyDown(e: VirtualKeyEvent): any;
+  onKeyUp(e: VirtualKeyEvent): any;
+  scrollHandler(x: number, y: number, deltaX: number, deltaY: number, ctrlKey: boolean): any;
+  mouseMoveHandler(x: number, y: number): any;
+  getViewportDimensions(): { width: number; height: number };
+  GetActiveToolId(): number;
+  RunCommand(id: number): any;
+  ZoomCommandId: number; // 10509
+  PanCommandId: number; //10523
+  OrbitCommandId: number; // 10508
+}
+
+enum MouseButton {
+  LEFT = 0,
+}
+
+enum MouseButtonAction {
+  DOWN = 0,
+  UP = 1,
+}
+
+interface VirtualKeyEvent {
+  physicalKey: string;
+  inputChar: number;
+  keyCode: number;
+}
+
 export async function getApi() {
   return new Promise<SketchUpWebApi>((resolve) => {
     const intervalHandle = setInterval(() => {
-      if (typeof globalThis.Module?.GetActiveToolId === "function") {
+      if (typeof window.Module?.GetActiveToolId === "function") {
         clearInterval(intervalHandle);
-        resolve(Module);
+        resolve(window.Module);
       }
     }, 1000);
   });
