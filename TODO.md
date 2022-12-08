@@ -1,0 +1,6 @@
+- Separate camera mode and scene mode
+- Navigator Button map
+- Adjustable sensitivity
+- Adjustable dead zone
+- Adjustable limit
+- Per-DOF adjustment
