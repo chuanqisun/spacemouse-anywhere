@@ -9,26 +9,23 @@
  */
 
 import { getGamepadSnapshot, selectSpaceMouse } from "./modules/device";
-import { getMotion } from "./modules/kinetics";
-import { getApi, pan, zoom } from "./modules/sketch-up";
+import { getMotion, isStill } from "./modules/kinetics";
+import { applyOrbitMotion, getApi, runInOrbitMode } from "./modules/sketch-up";
 import { tick } from "./utils/tick";
 import { withInterval } from "./utils/with-interval";
 
 export default async function main() {
   console.log("content injection live");
-
   const api = await getApi();
-  console.log("api available");
+  console.log("api detected");
+
+  const applyMotion = runInOrbitMode(api, applyOrbitMotion.bind(null, api));
 
   const gamepadFrameHandler = (interval: number) => {
     const motion = getMotion(interval, getGamepadSnapshot(selectSpaceMouse));
-    if (motion.zoom) {
-      zoom(api, motion.zoom);
-    }
+    if (isStill(motion)) return;
 
-    if (motion.panX || motion.panY) {
-      pan(api, motion.panX, motion.panY);
-    }
+    applyMotion(motion);
   };
   const gamepadIntervalFrameHandler = withInterval(gamepadFrameHandler);
 

@@ -6,6 +6,7 @@ interface SketchUpWebApi {
   mouseMoveHandler(x: number, y: number);
   getViewportDimensions(): { width: number; height: number };
   GetActiveToolId(): number;
+  RunCommand(id: number);
   ZoomCommandId: number; // 10509
   PanCommandId: number; //10523
   OrbitCommandId: number; // 10508

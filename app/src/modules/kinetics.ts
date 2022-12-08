@@ -12,8 +12,6 @@ export function getMotion(interval: number, snapshot: GamepadSnapshot): Motion {
   const [devX, devY, devZ] = axes;
 
   if (status === GamepadStatus.Active) {
-    console.log({ axes, interval });
-
     return {
       zoom: devY * interval * 5,
       rotate: 0,
@@ -29,3 +27,5 @@ export function getMotion(interval: number, snapshot: GamepadSnapshot): Motion {
     panY: 0,
   };
 }
+
+export const isStill = (motion: Motion) => motion.panX === 0 && motion.panY === 0 && motion.zoom === 0;
