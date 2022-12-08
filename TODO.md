@@ -1,4 +1,5 @@
 - Prevent memory leak from logging
+- Gray out plugin on other webpages
 - Do NOT clutch out when device is active
 - Separate camera mode and scene mode
 - Navigator Button map
