@@ -1,5 +1,15 @@
-async function main() {
+export default async function main() {
   console.log("popup live");
+
+  window.addEventListener("click", (e) => {
+    const action = (e.target as HTMLElement)?.closest(`[data-action]`)?.getAttribute("data-action");
+    debugger;
+
+    switch (action) {
+      case "reload":
+        return chrome.runtime.reload();
+    }
+  });
 }
 
-export default main;
+main();
