@@ -25,6 +25,12 @@ export function pan(api: SketchUpWebApi, panX: number, panY: number) {
   api.onKeyUp({ physicalKey: "ShiftLeft", keyCode: 16, inputChar: 0 });
 }
 
+export function orbit(api: SketchUpWebApi, rotateX: number, rotateZ: number) {
+  api.mouseButtonHandler(0, 0, 0, 0);
+  api.mouseMoveHandler(-rotateZ, rotateX);
+  api.mouseButtonHandler(0, 1, 0, 0);
+}
+
 export const runInOrbitMode =
   <T extends any[]>(api: SketchUpWebApi, task: (...args: T) => any) =>
   (...args: T) => {
@@ -48,5 +54,9 @@ export const applyOrbitMotion = (api: SketchUpWebApi, motion: Motion) => {
 
   if (motion.panX || motion.panY) {
     pan(api, motion.panX, motion.panY);
+  }
+
+  if (motion.orbitX || motion.orbitZ) {
+    orbit(api, motion.orbitX, motion.orbitZ);
   }
 };
