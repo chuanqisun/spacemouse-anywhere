@@ -1,4 +1,5 @@
 - Prevent memory leak from logging
+- Do NOT clutch out when device is active
 - Separate camera mode and scene mode
 - Navigator Button map
 - Adjustable sensitivity
