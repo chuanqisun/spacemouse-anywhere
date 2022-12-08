@@ -15,9 +15,10 @@ export interface SketchUpWebApi {
   getViewportDimensions(): { width: number; height: number };
   GetActiveToolId(): number;
   RunCommand(id: number): any;
+  OrbitCommandId: number; // 10508
   ZoomCommandId: number; // 10509
   PanCommandId: number; //10523
-  OrbitCommandId: number; // 10508
+  LookAroundCommandId: number; // 10525
 }
 
 enum MouseButton {
@@ -46,13 +47,13 @@ export async function getApi() {
   });
 }
 
-export function zoom(api: SketchUpWebApi, factor: number) {
+export function controlScroll(api: SketchUpWebApi, factor: number) {
   api.onKeyDown({ physicalKey: "CtrlLeft", keyCode: 17, inputChar: 0 });
   api.scrollHandler(1, 1, 0, factor, true);
   api.onKeyUp({ physicalKey: "CtrlLeft", keyCode: 17, inputChar: 0 });
 }
 
-export function pan(api: SketchUpWebApi, panX: number, panY: number) {
+export function shiftDrag(api: SketchUpWebApi, panX: number, panY: number) {
   api.onKeyDown({ physicalKey: "ShiftLeft", keyCode: 16, inputChar: 0 });
   api.mouseButtonHandler(0, 0, 0, 0);
   api.mouseMoveHandler(panX, panY);
@@ -60,19 +61,19 @@ export function pan(api: SketchUpWebApi, panX: number, panY: number) {
   api.onKeyUp({ physicalKey: "ShiftLeft", keyCode: 16, inputChar: 0 });
 }
 
-export function orbit(api: SketchUpWebApi, rotateX: number, rotateZ: number) {
+export function drag(api: SketchUpWebApi, rotateX: number, rotateZ: number) {
   api.mouseButtonHandler(0, 0, 0, 0);
   api.mouseMoveHandler(-rotateZ, rotateX);
   api.mouseButtonHandler(0, 1, 0, 0);
 }
 
-export const runInOrbitMode =
-  <T extends any[]>(api: SketchUpWebApi, task: (...args: T) => any) =>
+export const runInMode =
+  <T extends any[]>(api: SketchUpWebApi, mode: number, task: (...args: T) => any) =>
   (...args: T) => {
     const activeCommand = api.GetActiveToolId();
-    const needCommandChange = activeCommand !== api.OrbitCommandId;
+    const needCommandChange = activeCommand !== mode;
     if (needCommandChange) {
-      api.RunCommand(api.OrbitCommandId);
+      api.RunCommand(mode);
     }
 
     task(...args);
@@ -82,16 +83,48 @@ export const runInOrbitMode =
     }
   };
 
-export const applyOrbitMotion = (api: SketchUpWebApi, motion: Motion) => {
-  if (motion.zoom) {
-    zoom(api, motion.zoom);
-  }
+export const sceneZoomPanOrbit = (api: SketchUpWebApi) =>
+  runInMode(api, api.OrbitCommandId, (motion: Motion) => {
+    if (motion.zoom) {
+      controlScroll(api, motion.zoom);
+    }
 
-  if (motion.panX || motion.panY) {
-    pan(api, motion.panX, motion.panY);
-  }
+    if (motion.panX || motion.panY) {
+      shiftDrag(api, motion.panX, motion.panY);
+    }
 
-  if (motion.orbitX || motion.orbitZ) {
-    orbit(api, motion.orbitX, motion.orbitZ);
+    if (motion.rotateX || motion.rotateZ) {
+      drag(api, motion.rotateX, motion.rotateZ);
+    }
+  });
+
+export const sceneInverseOrbit = (api: SketchUpWebApi) =>
+  runInMode(api, api.OrbitCommandId, (motion: Motion) => {
+    if (motion.rotateX || motion.rotateZ) {
+      drag(api, -motion.rotateX, -motion.rotateZ);
+    }
+  });
+
+export const cameraZoomPan = (api: SketchUpWebApi) =>
+  runInMode(api, api.OrbitCommandId, (motion: Motion) => {
+    if (motion.zoom) {
+      controlScroll(api, -motion.zoom);
+    }
+
+    if (motion.panX || motion.panY) {
+      shiftDrag(api, -motion.panX, -motion.panY);
+    }
+  });
+
+export const cameraLook = (api: SketchUpWebApi) =>
+  runInMode(api, api.LookAroundCommandId, (motion: Motion) => {
+    if (motion.rotateX || motion.rotateZ) {
+      drag(api, -motion.rotateX, -motion.rotateZ);
+    }
+  });
+
+export const applyCameraMotion = (api: SketchUpWebApi, motion: Motion) => {
+  if (motion.rotateX || motion.rotateZ) {
+    drag(api, motion.rotateX, motion.rotateZ);
   }
 };

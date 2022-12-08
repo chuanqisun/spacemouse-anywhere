@@ -1,3 +1,4 @@
+- Prevent memory leak from logging
 - Separate camera mode and scene mode
 - Navigator Button map
 - Adjustable sensitivity

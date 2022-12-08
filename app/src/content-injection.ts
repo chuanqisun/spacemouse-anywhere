@@ -10,7 +10,7 @@
 
 import { getGamepadSnapshot, selectSpaceMouse } from "./modules/device";
 import { getMotion, isStill } from "./modules/kinetics";
-import { applyOrbitMotion, getApi, runInOrbitMode } from "./modules/sketch-up";
+import { cameraLook, cameraZoomPan, getApi, sceneInverseOrbit, sceneZoomPanOrbit } from "./modules/sketch-up";
 import { tick } from "./utils/tick";
 import { withInterval } from "./utils/with-interval";
 
@@ -19,13 +19,24 @@ export default async function main() {
   const api = await getApi();
   console.log("api detected");
 
-  const applyMotion = runInOrbitMode(api, applyOrbitMotion.bind(null, api));
+  // const applyMotion = runInMode(api, api.OrbitCommandId, applyOrbitMotion.bind(null, api));
+
+  const applyScene = sceneZoomPanOrbit(api);
+  const applyCameraZoomPan = cameraZoomPan(api);
+  const applyCameraLook = cameraLook(api);
+  const applySceneInverseOrbit = sceneInverseOrbit(api);
 
   const gamepadFrameHandler = (interval: number) => {
     const motion = getMotion(interval, getGamepadSnapshot(selectSpaceMouse));
     if (isStill(motion)) return;
 
-    applyMotion(motion);
+    if (1 > 2) {
+      applyCameraZoomPan(motion);
+      // applyCameraLook(motion);
+      applySceneInverseOrbit(motion);
+    } else {
+      applyScene(motion);
+    }
   };
   const gamepadIntervalFrameHandler = withInterval(gamepadFrameHandler);
 
