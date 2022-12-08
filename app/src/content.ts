@@ -8,20 +8,11 @@
  * See related setup in `build.js`
  */
 
-import { getGamepadSnapshot, selectSpaceMouse } from "./modules/device";
-import { getMotion } from "./modules/kinetics";
-import { tick } from "./utils/tick";
-import { withInterval } from "./utils/with-interval";
+import { injectScript } from "./utils/inject-script";
 
-export default function main() {
+export default async function main() {
   console.log("content script live");
-
-  const gamepadFrameHandler = (interval: number) => {
-    const motion = getMotion(interval, getGamepadSnapshot(selectSpaceMouse));
-  };
-  const gamepadIntervalFrameHandler = withInterval(gamepadFrameHandler);
-
-  tick(gamepadIntervalFrameHandler);
+  injectScript(chrome.runtime.getURL("content-injection.js"));
 }
 
 // No need to call default exported function. Chrome runtime will execute.

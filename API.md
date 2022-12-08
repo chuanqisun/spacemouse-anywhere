@@ -1,35 +1,24 @@
 # API from common.js
 
 Pending questions
+
 - Detection screen center (needed for zooming)
 - Detect current mode (not be needed if use Ctrl + scroll for zooming)
 - Clutching current tool with orbit tool
 - Object manipulation
 
 ```typescript
-
 interface Module {
-  mouseButtonHandler(
-    button: MouseButton,
-    action: MouseButtonAction,
-    x: number,
-    y: number
-  );
+  mouseButtonHandler(button: MouseButton, action: MouseButtonAction, x: number, y: number);
   onKeyDown(e: VirtualKeyEvent);
   onKeyUp(e: VirtualKeyEvent);
-  scrollHandler(
-    x: number,
-    y: number,
-    deltaX: number,
-    deltaY: number,
-    ctrlKey: boolean
-  );
+  scrollHandler(x: number, y: number, deltaX: number, deltaY: number, ctrlKey: boolean);
   mouseMoveHandler(x: number, y: number);
-  getViewportDimensions(): {width: number, height: number};
+  getViewportDimensions(): { width: number; height: number };
   GetActiveToolId(): number;
-  Module.ZoomCommandId: number; // 10509
-  Module.PanCommandId: number; //10523
-  Module.OrbitCommandId: number; // 10508
+  ZoomCommandId: number; // 10509
+  PanCommandId: number; //10523
+  OrbitCommandId: number; // 10508
 }
 
 enum MouseButton {
@@ -73,4 +62,3 @@ Module.onKeyDown({ physicalKey: "CtrlLeft", keyCode: 17, inputChar: 0 });
 Module.scrollHandler(1, 1, 0, -100, true);
 Module.onKeyUp({ physicalKey: "CtrlLeft", keyCode: 17, inputChar: 0 });
 ```
-

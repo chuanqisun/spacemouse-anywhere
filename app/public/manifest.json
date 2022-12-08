@@ -20,8 +20,14 @@
   "permissions": ["activeTab", "scripting"],
   "content_scripts": [
     {
-      "matches":  ["https://app.sketchup.com/*"],
+      "matches": ["https://app.sketchup.com/*"],
       "js": ["content.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["content-injection.js"],
+      "matches": ["https://app.sketchup.com/*"]
     }
   ]
 }

@@ -11,14 +11,21 @@ export enum GamepadStatus {
   Active = 2,
 }
 
-export type GamepadAxes = readonly number[];
+export type GamepadAxes = [
+  translateX: number, // Left=-1, Right=1
+  translateZ: number, //Forward, Backward
+  translateY: number, // Up, Down
+  rotateX: number, // Pitch up, Pitch down
+  rotateZ: number, // Roll right, Roll light
+  rotateY: number // Yaw left, Yaw right
+];
 
 export const getGamepadSnapshot: Poller = (selectGamepad: (gamepad: Gamepad | null) => boolean) => {
   const spaceNavigator = navigator.getGamepads().find(selectGamepad);
   let { status, axes } = { status: GamepadStatus.Disconnected, axes: [0, 0, 0, 0, 0, 0] as GamepadAxes };
 
   if (spaceNavigator?.axes) {
-    axes = spaceNavigator.axes;
+    axes = spaceNavigator.axes as GamepadAxes;
     if (axes.every((item) => item === 0)) {
       status = GamepadStatus.Idle;
     } else {
