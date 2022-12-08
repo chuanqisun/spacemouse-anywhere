@@ -1,0 +1,30 @@
+{
+  "name": "root",
+  "version": "0.0.0",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npm run dev -w app",
+    "build": "npm run build -w app"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/osmoscraft/lens.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/osmoscraft/lens/issues"
+  },
+  "homepage": "https://github.com/osmoscraft/lens#readme",
+  "workspaces": [
+    "app",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "chokidar": "^3.5.3",
+    "prettier": "^2.7.1"
+  }
+}

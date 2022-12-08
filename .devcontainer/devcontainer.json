@@ -1,0 +1,10 @@
+{
+  "name": "Lens Dev Container",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "settings": {},
+  "remoteUser": "node",
+  "postCreateCommand": "./.devcontainer/init.sh",
+  "extensions": ["esbenp.prettier-vscode"]
+}

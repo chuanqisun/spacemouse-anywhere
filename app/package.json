@@ -1,0 +1,16 @@
+{
+  "name": "sketchup-web-spacemouse",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/build.js --watch --dev",
+    "build": "tsc && node scripts/build.js"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.200",
+    "esbuild": "^0.15.14",
+    "typescript": "^4.9.3"
+  },
+  "dependencies": {}
+}
