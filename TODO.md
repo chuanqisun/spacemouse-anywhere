@@ -1,3 +1,4 @@
+- Buffer architecture: read device @10ms, output integral to buffer, then read buffer @animateFrameRate
 - Prevent memory leak from logging
 - Remain in orbit mode until device inactive
 - Allow interwoven mouse interaction
