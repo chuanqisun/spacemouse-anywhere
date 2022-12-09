@@ -1,4 +1,7 @@
 - Prevent memory leak from logging
+- Remain in orbit mode until device inactive
+- Allow interwoven mouse interaction
+- Interpolate speed based two snapshot average
 - Gray out plugin on other webpages
 - Do NOT clutch out when device is active
 - Separate camera mode and scene mode
