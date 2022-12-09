@@ -1,3 +1,4 @@
+- Removing the two-buffer smoothing technique. It's useless
 - Prevent memory leak from logging
 - Remain in orbit mode until device inactive
 - Allow interwoven mouse interaction
