@@ -3,6 +3,7 @@ export type Poller = (...args: any[]) => GamepadSnapshot;
 export interface GamepadSnapshot {
   status: GamepadStatus;
   axes: GamepadAxes;
+  timestamp: number;
 }
 
 export enum GamepadStatus {
@@ -11,7 +12,7 @@ export enum GamepadStatus {
   Active = 2,
 }
 
-export type GamepadAxes = [
+export type GamepadAxes = readonly [
   mouseX: number, // Left=-1, Right=1
   mouseY: number, //Forward, Backward
   mouseZ: number, // Up, Down
@@ -20,9 +21,11 @@ export type GamepadAxes = [
   mouseRotateZ: number // Yaw left, Yaw right
 ];
 
+const EMPTY_AXES = Object.freeze([0, 0, 0, 0, 0, 0]) as GamepadAxes;
+
 export const getGamepadSnapshot: Poller = (selectGamepad: (gamepad: Gamepad | null) => boolean) => {
   const spaceNavigator = navigator.getGamepads().find(selectGamepad);
-  let { status, axes } = { status: GamepadStatus.Disconnected, axes: [0, 0, 0, 0, 0, 0] as GamepadAxes };
+  let { status, axes } = { status: GamepadStatus.Disconnected, axes: EMPTY_AXES };
 
   if (spaceNavigator?.axes) {
     axes = spaceNavigator.axes as GamepadAxes;
@@ -32,11 +35,11 @@ export const getGamepadSnapshot: Poller = (selectGamepad: (gamepad: Gamepad | nu
       status = GamepadStatus.Active;
     }
   } else {
-    axes = [0, 0, 0, 0, 0, 0];
+    axes = EMPTY_AXES;
     status = GamepadStatus.Disconnected;
   }
 
-  return { status, axes };
+  return { status, axes, timestamp: performance.now() };
 };
 
 export function selectSpaceMouse(gamepad: Gamepad | null) {

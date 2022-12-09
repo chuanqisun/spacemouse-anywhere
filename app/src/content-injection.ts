@@ -8,39 +8,55 @@
  * See related setup in `build.js`
  */
 
-import { getGamepadSnapshot, selectSpaceMouse } from "./modules/device";
-import { getMotion, isStill } from "./modules/kinetics";
-import { cameraLook, cameraZoomPan, getApi, sceneInverseOrbit, sceneZoomPanOrbit } from "./modules/sketch-up";
+import { GamepadSnapshot, GamepadStatus, getGamepadSnapshot, selectSpaceMouse } from "./modules/device";
+import { controlScroll, drag, getApi, shiftDrag } from "./modules/sketch-up";
 import { tick } from "./utils/tick";
-import { withInterval } from "./utils/with-interval";
 
 export default async function main() {
   console.log("content injection live");
   const api = await getApi();
   console.log("api detected");
 
-  // const applyMotion = runInMode(api, api.OrbitCommandId, applyOrbitMotion.bind(null, api));
-
-  const applyScene = sceneZoomPanOrbit(api);
-  const applyCameraZoomPan = cameraZoomPan(api);
-  const applyCameraLook = cameraLook(api);
-  const applySceneInverseOrbit = sceneInverseOrbit(api);
-
-  const gamepadFrameHandler = (interval: number) => {
-    const motion = getMotion(interval, getGamepadSnapshot(selectSpaceMouse));
-    if (isStill(motion)) return;
-
-    if (1 > 2) {
-      applyCameraZoomPan(motion);
-      // applyCameraLook(motion);
-      applySceneInverseOrbit(motion);
-    } else {
-      applyScene(motion);
-    }
+  const getFrameScanner = <T>(onFrameChange: (oldFrame: T, newFrame: T) => any) => {
+    let oldFrame: T | undefined = undefined;
+    return (frame: T) => {
+      if (oldFrame) {
+        onFrameChange(oldFrame, frame);
+      }
+      oldFrame = frame;
+    };
   };
-  const gamepadIntervalFrameHandler = withInterval(gamepadFrameHandler);
 
-  tick(gamepadIntervalFrameHandler);
+  let restoreCommandId: number | null = null;
+
+  const multiplier = [2, 2, 2, 1, 1, 1];
+
+  const frameScanner = getFrameScanner((oldFrame: GamepadSnapshot, newFrame: GamepadSnapshot) => {
+    if (oldFrame.status !== GamepadStatus.Active && newFrame.status === GamepadStatus.Active) {
+      const activeCommand = api.GetActiveToolId();
+      if ((restoreCommandId = activeCommand !== api.OrbitCommandId ? activeCommand : null)) {
+        api.RunCommand(api.OrbitCommandId);
+      }
+    } else if (newFrame.status !== GamepadStatus.Active && oldFrame.status === GamepadStatus.Active) {
+      if (restoreCommandId) {
+        api.RunCommand(restoreCommandId); // restore
+      }
+    } else if (oldFrame.status !== GamepadStatus.Active && newFrame.status !== GamepadStatus.Active) {
+      return;
+    } else {
+      const interval = newFrame.timestamp - oldFrame.timestamp;
+      console.log(interval);
+      const [panX, zoom, panY, rotateX, _rotateY, rotateZ] = newFrame.axes.map(
+        (newValue, i) => (newValue + oldFrame.axes[i]) * interval * multiplier[i]
+      );
+
+      zoom && controlScroll(api, zoom);
+      (panX || panY) && shiftDrag(api, panX, panY);
+      (rotateX || rotateZ) && drag(api, rotateX, rotateZ);
+    }
+  });
+
+  tick(() => frameScanner(getGamepadSnapshot(selectSpaceMouse)));
 }
 
 // No need to call default exported function. Chrome runtime will execute.

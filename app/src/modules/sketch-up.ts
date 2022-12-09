@@ -48,9 +48,9 @@ export async function getApi() {
 }
 
 export function controlScroll(api: SketchUpWebApi, factor: number) {
-  api.onKeyDown({ physicalKey: "CtrlLeft", keyCode: 17, inputChar: 0 });
+  // api.onKeyDown({ physicalKey: "CtrlLeft", keyCode: 17, inputChar: 0 });
   api.scrollHandler(1, 1, 0, factor, true);
-  api.onKeyUp({ physicalKey: "CtrlLeft", keyCode: 17, inputChar: 0 });
+  // api.onKeyUp({ physicalKey: "CtrlLeft", keyCode: 17, inputChar: 0 });
 }
 
 export function shiftDrag(api: SketchUpWebApi, panX: number, panY: number) {
