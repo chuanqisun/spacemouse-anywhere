@@ -3,7 +3,6 @@ export default async function main() {
 
   window.addEventListener("click", (e) => {
     const action = (e.target as HTMLElement)?.closest(`[data-action]`)?.getAttribute("data-action");
-    debugger;
 
     switch (action) {
       case "reload":

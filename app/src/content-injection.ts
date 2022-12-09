@@ -8,8 +8,9 @@
  * See related setup in `build.js`
  */
 
-import { GamepadSnapshot, GamepadStatus, getGamepadSnapshot, selectSpaceMouse } from "./modules/device";
+import { GamepadStatus } from "./modules/device";
 import { controlScroll, drag, getApi, shiftDrag } from "./modules/sketch-up";
+import type { GamepadSnapshotBuffer } from "./proxy";
 import { tick } from "./utils/tick";
 
 export default async function main() {
@@ -29,9 +30,7 @@ export default async function main() {
 
   let restoreCommandId: number | null = null;
 
-  const multiplier = [2, 2, 2, 1, 1, 1];
-
-  const frameScanner = getFrameScanner((oldFrame: GamepadSnapshot, newFrame: GamepadSnapshot) => {
+  const frameScanner = getFrameScanner((oldFrame: GamepadSnapshotBuffer, newFrame: GamepadSnapshotBuffer) => {
     if (oldFrame.status !== GamepadStatus.Active && newFrame.status === GamepadStatus.Active) {
       const activeCommand = api.GetActiveToolId();
       if ((restoreCommandId = activeCommand !== api.OrbitCommandId ? activeCommand : null)) {
@@ -43,20 +42,28 @@ export default async function main() {
       }
     } else if (oldFrame.status !== GamepadStatus.Active && newFrame.status !== GamepadStatus.Active) {
       return;
-    } else {
-      const interval = newFrame.timestamp - oldFrame.timestamp;
-      console.log(interval);
-      const [panX, zoom, panY, rotateX, _rotateY, rotateZ] = newFrame.axes.map(
-        (newValue, i) => (newValue + oldFrame.axes[i]) * interval * multiplier[i]
-      );
-
-      zoom && controlScroll(api, zoom);
-      (panX || panY) && shiftDrag(api, panX, panY);
-      (rotateX || rotateZ) && drag(api, rotateX, rotateZ);
     }
+
+    const [panX, zoom, panY, rotateX, _rotateY, rotateZ] = newFrame.axes;
+    zoom && controlScroll(api, zoom);
+    (panX || panY) && shiftDrag(api, panX, panY);
+    (rotateX || rotateZ) && drag(api, rotateX, rotateZ);
   });
 
-  tick(() => frameScanner(getGamepadSnapshot(selectSpaceMouse)));
+  let sendTime = 0;
+  let averageLatency = 0;
+  const proxy = document.getElementById("spacemouse-extension") as HTMLIFrameElement;
+  window.addEventListener("message", (e) => {
+    frameScanner(e.data as GamepadSnapshotBuffer);
+    averageLatency = averageLatency * 0.8 + (performance.now() - sendTime) * 0.2;
+  });
+
+  tick(() => {
+    sendTime = performance.now();
+    proxy.contentWindow?.postMessage("read-buffer", "*");
+  });
+
+  setInterval(() => console.log(`[perf] Latency ${averageLatency} ms`), 1000);
 }
 
 // No need to call default exported function. Chrome runtime will execute.

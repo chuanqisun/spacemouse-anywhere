@@ -1,4 +1,3 @@
-- Buffer architecture: read device @10ms, output integral to buffer, then read buffer @animateFrameRate
 - Prevent memory leak from logging
 - Remain in orbit mode until device inactive
 - Allow interwoven mouse interaction
@@ -12,3 +11,6 @@
 - Adjustable dead zone
 - Adjustable limit
 - Per-DOF adjustment
+
+- [x] Buffer architecture: read device @10ms, output integral to buffer, then read buffer @animateFrameRate
+- [x] Consider using iframe to ensure high device reading framerate
