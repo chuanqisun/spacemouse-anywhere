@@ -3,6 +3,7 @@
 - Allow interwoven mouse interaction
 - Interpolate speed based two snapshot average
 - Gray out plugin on other webpages
+- throttle to 30 FPS for large models
 - Do NOT clutch out when device is active
 - Separate camera mode and scene mode
 - Navigator Button map
