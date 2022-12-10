@@ -1,13 +1,3 @@
-/**
- * In order to bundle the content script and keep it compatible with `chrome.scripting` api, make sure each file uses the following format:
- * ```typescript
- * export default function nameOfFunciont() {
- *   // implementation
- * }
- * ```
- * See related setup in `build.js`
- */
-
 import type { GamepadSnapshotBuffer } from "./input-thread";
 import { GamepadStatus } from "./modules/device";
 import { controlScroll, drag, getApi, shiftDrag } from "./modules/sketch-up";
@@ -66,5 +56,3 @@ export default async function main() {
 
   setInterval(() => console.log(`[perf] Latency ${averageLatency} ms`), 1000);
 }
-
-// No need to call default exported function. Chrome runtime will execute.
