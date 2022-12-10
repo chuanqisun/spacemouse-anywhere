@@ -1,4 +1,5 @@
 - Gray out plugin on other webpages
+- Minimum diagnostic UI
 - Respect inversion from settings menu
 - Respect sensitity from settings menu
 - Removing the two-buffer smoothing technique. It's useless
