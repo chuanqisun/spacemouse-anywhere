@@ -1,4 +1,4 @@
-import { GamepadAxes, GamepadSnapshot, GamepadStatus, getGamepadSnapshot, selectSpaceMouse } from "./modules/device";
+import { GamepadAxes, GamepadSnapshot, GamepadStatus, getGamepadSnapshot } from "./modules/device";
 import { tick } from "./utils/tick";
 
 export interface GamepadSnapshotBuffer {
@@ -52,7 +52,7 @@ export default async function main() {
     bufferInterval = 0;
   });
 
-  tick(() => frameScanner(getGamepadSnapshot(selectSpaceMouse)));
+  tick(() => frameScanner(getGamepadSnapshot()));
 
   setInterval(() => console.log(`[perf] ${(1000 / averageInterval).toFixed(0)} FPS`), 1000);
 }

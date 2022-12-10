@@ -1,4 +1,4 @@
-import { GamepadStatus, getGamepadSnapshot, selectSpaceMouse } from "./modules/device";
+import { GamepadStatus, getGamepadSnapshot } from "./modules/device";
 import { tick } from "./utils/tick";
 
 export default async function main() {
@@ -45,7 +45,7 @@ export default async function main() {
   };
 
   const onTick = () => {
-    const snapshot = getGamepadSnapshot(selectSpaceMouse);
+    const snapshot = getGamepadSnapshot();
     statusElement.value = decodeStatus(snapshot.status);
     const [x, y, z, rx, ry, rz] = snapshot.axes;
     updateVisualization(xElement, x);
