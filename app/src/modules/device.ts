@@ -21,21 +21,29 @@ export type GamepadAxes = readonly [
 
 const EMPTY_AXES = Object.freeze([0, 0, 0, 0, 0, 0]) as GamepadAxes;
 
+/**
+ * Get the current state of the device using the navigator gamepad API
+ * Return null if device not found.
+ */
 export const getGamepadSnapshot = (selectGamepad: (gamepad: Gamepad | null) => boolean) => {
-  const spaceNavigator = navigator.getGamepads().find(selectGamepad);
-  let { status, axes } = { status: GamepadStatus.Disconnected, axes: EMPTY_AXES };
+  const gamepad = navigator.getGamepads().filter(selectGamepad).reduce(selectFirstItem, null);
+  if (!gamepad)
+    return {
+      status: GamepadStatus.Disconnected,
+      axes: EMPTY_AXES,
+      timestamp: performance.now(),
+    };
 
-  if (spaceNavigator?.axes) {
-    axes = spaceNavigator.axes as GamepadAxes;
-    if (axes.every((item) => item === 0)) {
-      status = GamepadStatus.Idle;
-    } else {
-      status = GamepadStatus.Active;
-    }
-  }
-
-  return { status, axes, timestamp: performance.now() };
+  return {
+    status: gamepad.axes.some(Boolean) ? GamepadStatus.Active : GamepadStatus.Idle,
+    axes: gamepad.axes as GamepadAxes,
+    timestamp: performance.now(),
+  };
 };
+
+export function selectFirstItem<T extends any>(_prev: any, _current: any, _index: number, array: T[]): T {
+  return array[0];
+}
 
 export function selectSpaceMouse(gamepad: Gamepad | null) {
   if (!gamepad?.id) return false;
