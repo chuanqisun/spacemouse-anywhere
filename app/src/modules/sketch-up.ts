@@ -53,17 +53,17 @@ export function controlScroll(api: SketchUpWebApi, factor: number) {
   // api.onKeyUp({ physicalKey: "CtrlLeft", keyCode: 17, inputChar: 0 });
 }
 
-export function shiftDrag(api: SketchUpWebApi, panX: number, panY: number) {
+export function shiftDrag(api: SketchUpWebApi, x: number, y: number) {
   api.onKeyDown({ physicalKey: "ShiftLeft", keyCode: 16, inputChar: 0 });
   api.mouseButtonHandler(0, 0, 0, 0);
-  api.mouseMoveHandler(panX, panY);
+  api.mouseMoveHandler(x, y);
   api.mouseButtonHandler(0, 1, 0, 0);
   api.onKeyUp({ physicalKey: "ShiftLeft", keyCode: 16, inputChar: 0 });
 }
 
-export function drag(api: SketchUpWebApi, rotateX: number, rotateZ: number) {
+export function drag(api: SketchUpWebApi, x: number, y: number) {
   api.mouseButtonHandler(0, 0, 0, 0);
-  api.mouseMoveHandler(-rotateZ, rotateX);
+  api.mouseMoveHandler(x, y);
   api.mouseButtonHandler(0, 1, 0, 0);
 }
 

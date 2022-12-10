@@ -44,10 +44,10 @@ export default async function main() {
       return;
     }
 
-    const [panX, zoom, panY, rotateX, _rotateY, rotateZ] = newFrame.axes;
-    zoom && controlScroll(api, zoom);
-    (panX || panY) && shiftDrag(api, panX, panY);
-    (rotateX || rotateZ) && drag(api, rotateX, rotateZ);
+    const [mouseX, mouseY, mouseZ, mouseRotateX, _mouseRotateY, mouseRoatateZ] = newFrame.axes;
+    mouseY && controlScroll(api, mouseY);
+    (mouseX || mouseZ) && shiftDrag(api, mouseX, mouseZ);
+    (mouseRotateX || mouseRoatateZ) && drag(api, -mouseRoatateZ, mouseRotateX);
   });
 
   let sendTime = 0;
