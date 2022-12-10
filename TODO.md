@@ -1,18 +1,16 @@
-- Removing the two-buffer smoothing technique. It's useless
-- Prevent memory leak from logging
-- Remain in orbit mode until device inactive
-- Allow interwoven mouse interaction
-- Interpolate speed based two snapshot average
 - Gray out plugin on other webpages
-- throttle to 30 FPS for large models
-- Do NOT clutch out when device is active
+- Respect inversion from settings menu
+- Respect sensitity from settings menu
+- Removing the two-buffer smoothing technique. It's useless
+- Interpolate speed based two snapshot average
 - Separate camera mode and scene mode
 - Navigator Button map
-- Adjustable sensitivity
 - Adjustable dead zone
 - Adjustable limit
-- Per-DOF adjustment
 - Add notification bubble for status display
 
 - [x] Buffer architecture: read device @10ms, output integral to buffer, then read buffer @animateFrameRate
 - [x] Consider using iframe to ensure high device reading framerate
+- [x] Prevent memory leak from logging
+- [x] Remain in orbit mode until device inactive
+- [x] Allow interwoven mouse interaction
