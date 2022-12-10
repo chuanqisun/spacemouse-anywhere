@@ -14,8 +14,8 @@ const constants = {
   UNPACKED_OUT_DIR: `dist/unpacked`, // relative to cwd
   PUBLIC_DIR: `public`, // relative to cwd
   SRC_DIR: `src`, // relative to cwd
-  PAGE_ENTRIES: ["popup.ts", "proxy.ts"], // relative to src
-  CONTENT_SCRIPT_ENTRIES: ["boot-loader.ts", "content-injection.ts"], // relative to src
+  PAGE_ENTRIES: ["popup.ts", "input-thread.ts"], // relative to src
+  CONTENT_SCRIPT_ENTRIES: ["boot-loader.ts", "output-thread.ts"], // relative to src
   WORKER_ENTRIES: ["background.ts"],
 };
 

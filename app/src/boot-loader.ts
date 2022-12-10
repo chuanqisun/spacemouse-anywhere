@@ -12,9 +12,8 @@ import { injectIframe } from "./utils/inject-iframe";
 import { injectScript } from "./utils/inject-script";
 
 export default async function main() {
-  console.log("content script live");
-  injectScript(chrome.runtime.getURL("content-injection.js"));
-  injectIframe(chrome.runtime.getURL("proxy.html"));
+  injectScript(chrome.runtime.getURL("output-thread.js"));
+  injectIframe(chrome.runtime.getURL("input-thread.html"));
 }
 
 // No need to call default exported function. Chrome runtime will execute.

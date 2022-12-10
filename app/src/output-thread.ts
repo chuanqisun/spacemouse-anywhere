@@ -8,9 +8,9 @@
  * See related setup in `build.js`
  */
 
+import type { GamepadSnapshotBuffer } from "./input-thread";
 import { GamepadStatus } from "./modules/device";
 import { controlScroll, drag, getApi, shiftDrag } from "./modules/sketch-up";
-import type { GamepadSnapshotBuffer } from "./proxy";
 import { tick } from "./utils/tick";
 
 export default async function main() {

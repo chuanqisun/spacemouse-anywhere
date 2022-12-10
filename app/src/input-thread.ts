@@ -23,8 +23,6 @@ let bufferStatus = GamepadStatus.Disconnected;
 let averageInterval = 0;
 
 export default async function main() {
-  console.log("proxy live");
-
   const getFrameScanner = <T>(onFrameChange: (oldFrame: T, newFrame: T) => any) => {
     let oldFrame: T | undefined = undefined;
     return (frame: T) => {
