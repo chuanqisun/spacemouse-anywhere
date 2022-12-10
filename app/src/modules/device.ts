@@ -1,5 +1,3 @@
-export type Poller = (...args: any[]) => GamepadSnapshot;
-
 export interface GamepadSnapshot {
   status: GamepadStatus;
   axes: GamepadAxes;
@@ -23,7 +21,7 @@ export type GamepadAxes = readonly [
 
 const EMPTY_AXES = Object.freeze([0, 0, 0, 0, 0, 0]) as GamepadAxes;
 
-export const getGamepadSnapshot: Poller = (selectGamepad: (gamepad: Gamepad | null) => boolean) => {
+export const getGamepadSnapshot = (selectGamepad: (gamepad: Gamepad | null) => boolean) => {
   const spaceNavigator = navigator.getGamepads().find(selectGamepad);
   let { status, axes } = { status: GamepadStatus.Disconnected, axes: EMPTY_AXES };
 

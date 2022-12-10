@@ -10,6 +10,31 @@
   <body>
     <div>Hello SpaceMouse pilot!</div>
     <button data-action="reload">Reload</button>
+    <div id="status">Disconnected</div>
+    <fieldset>
+      <legend>X</legend>
+      <meter id="x" value="0" min="-1" max="1" low="-0.05" high="0.05" optimum="1"></meter>
+    </fieldset>
+    <fieldset>
+      <legend>Y</legend>
+      <meter id="y" value="0" min="-1" max="1" low="-0.5" high="0.5"></meter>
+    </fieldset>
+    <fieldset>
+      <legend>Z</legend>
+      <meter id="z" value="0" min="-1" max="1" low="-0.5" high="0.5"></meter>
+    </fieldset>
+    <fieldset>
+      <legend>Rotate X</legend>
+      <meter id="rx" value="0" min="-1" max="1" low="-0.5" high="0.5"></meter>
+    </fieldset>
+    <fieldset>
+      <legend>Rotate Y</legend>
+      <meter id="ry" value="0" min="-1" max="1" low="-0.5" high="0.5"></meter>
+    </fieldset>
+    <fieldset>
+      <legend>Rotate Z</legend>
+      <meter id="rz" value="0" min="-1" max="1" low="-0.5" high="0.5"></meter>
+    </fieldset>
     <script type="module" src="./popup.js"></script>
   </body>
 </html>
