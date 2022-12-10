@@ -19,7 +19,7 @@ export type GamepadAxes = readonly [
   mouseRotateZ: number // Yaw left, Yaw right
 ];
 
-const EMPTY_AXES = Object.freeze([0, 0, 0, 0, 0, 0]) as GamepadAxes;
+export const EMPTY_AXES = Object.freeze([0, 0, 0, 0, 0, 0]) as GamepadAxes;
 const DISCONNECTED_SNAPSHOT: GamepadSnapshot = {
   status: GamepadStatus.Disconnected,
   axes: EMPTY_AXES,

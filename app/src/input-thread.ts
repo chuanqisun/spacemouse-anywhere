@@ -1,4 +1,5 @@
 import { GamepadAxes, GamepadSnapshot, GamepadStatus, getGamepadSnapshot } from "./modules/device";
+import { getScanner } from "./modules/kinetics";
 import { tick } from "./utils/tick";
 
 export interface GamepadSnapshotBuffer {
@@ -13,19 +14,9 @@ let bufferStatus = GamepadStatus.Disconnected;
 let averageInterval = 0;
 
 export default async function main() {
-  const getFrameScanner = <T>(onFrameChange: (oldFrame: T, newFrame: T) => any) => {
-    let oldFrame: T | undefined = undefined;
-    return (frame: T) => {
-      if (oldFrame) {
-        onFrameChange(oldFrame, frame);
-      }
-      oldFrame = frame;
-    };
-  };
-
   const multiplier = [2, 2, 2, 1, 1, 1];
 
-  const frameScanner = getFrameScanner((oldFrame: GamepadSnapshot, newFrame: GamepadSnapshot) => {
+  const frameScanner = getScanner((oldFrame: GamepadSnapshot, newFrame: GamepadSnapshot) => {
     const interval = newFrame.timestamp - oldFrame.timestamp;
     bufferAxes = newFrame.axes.map(
       (newValue, i) => bufferAxes[i] + (newValue + oldFrame.axes[i]) * interval * multiplier[i]

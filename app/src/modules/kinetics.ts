@@ -1,4 +1,64 @@
-import { GamepadSnapshot, GamepadStatus } from "./device";
+import { EMPTY_AXES, GamepadAxes, GamepadSnapshot, GamepadStatus } from "./device";
+
+/**
+ * Get a function that when recalled repeatedly, the given change handler is invoked
+ * with the old and new values for each change.
+ *
+ * The scanner won't invoke the change handler until the first two values are available,
+ * and the first of which must be truthy.
+ */
+export function getScanner<T>(onChange: (oldValue: T, newValue: T) => any) {
+  let oldValue: T | undefined = undefined;
+
+  return (newValue: T) => {
+    if (oldValue) {
+      onChange(oldValue, newValue);
+    }
+    oldValue = newValue;
+  };
+}
+
+export interface FrameBuffer {
+  axes: GamepadAxes;
+  interval: number;
+  status: GamepadStatus;
+  isRead: boolean;
+}
+
+export interface FrameBufferChange {
+  axes: GamepadAxes;
+  interval: number;
+  status: GamepadStatus;
+}
+
+export function getFrameBufferChange(oldSnapshot: GamepadSnapshot, newSnapshot: GamepadSnapshot): FrameBufferChange {
+  return {
+    axes: newSnapshot.axes.map((axis, i) => axis - oldSnapshot.axes[i]) as any as GamepadAxes,
+    interval: newSnapshot.timestamp - oldSnapshot.timestamp,
+    status: newSnapshot.status,
+  };
+}
+
+export function getUpdatedBuffer(buffer: FrameBuffer, change: FrameBufferChange): FrameBuffer {
+  return {
+    axes: change.axes.map((axis, i) => axis + buffer.axes[i]) as any as GamepadAxes,
+    interval: change.interval + buffer.interval,
+    // Unless buffer was just read, the active status will be sticky
+    status: buffer.isRead || buffer.status !== GamepadStatus.Active ? change.status : buffer.status,
+    isRead: buffer.isRead,
+  };
+}
+
+export function getCleanBuffer(buffer: FrameBuffer): FrameBuffer {
+  return {
+    axes: EMPTY_AXES,
+    interval: 0,
+    status: buffer.status,
+    isRead: true,
+  };
+}
+
+// TODO: clean up legacy logic
 
 export interface Motion {
   zoom: number;
