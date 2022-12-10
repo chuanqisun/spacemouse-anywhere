@@ -49,10 +49,12 @@ export default async function main() {
 
   // handle buffer read
   window.addEventListener("message", (e) => {
-    averageInterval = averageInterval * 0.8 + bufferInterval * 0.2;
+    if (e.data !== "requestframe") return;
 
+    averageInterval = averageInterval * 0.8 + bufferInterval * 0.2;
     window.parent.postMessage(
       {
+        type: "frame",
         axes: bufferAxes,
         status: bufferStatus,
       },

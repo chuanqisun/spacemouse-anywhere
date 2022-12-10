@@ -54,13 +54,14 @@ export default async function main() {
   let averageLatency = 0;
   const proxy = document.getElementById("spacemouse-extension") as HTMLIFrameElement;
   window.addEventListener("message", (e) => {
+    if (e.data.type !== "frame") return;
     frameScanner(e.data as GamepadSnapshotBuffer);
     averageLatency = averageLatency * 0.8 + (performance.now() - sendTime) * 0.2;
   });
 
   tick(() => {
     sendTime = performance.now();
-    proxy.contentWindow?.postMessage("read-buffer", "*");
+    proxy.contentWindow?.postMessage("requestframe", "*");
   });
 
   setInterval(() => console.log(`[perf] Latency ${averageLatency} ms`), 1000);

@@ -33,6 +33,3 @@ export function getMotion(interval: number, snapshot: GamepadSnapshot): Motion {
     panY: 0,
   };
 }
-
-export const isStill = (motion: Motion) =>
-  motion.panX === 0 && motion.panY === 0 && motion.zoom === 0 && motion.rotateX === 0 && motion.rotateZ === 0;

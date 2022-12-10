@@ -9,6 +9,7 @@
 - Adjustable dead zone
 - Adjustable limit
 - Add notification bubble for status display
+- Prevent double render in the UI
 
 - [x] Buffer architecture: read device @10ms, output integral to buffer, then read buffer @animateFrameRate
 - [x] Consider using iframe to ensure high device reading framerate

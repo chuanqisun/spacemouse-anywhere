@@ -32,9 +32,6 @@ export const getGamepadSnapshot = (selectGamepad: (gamepad: Gamepad | null) => b
     } else {
       status = GamepadStatus.Active;
     }
-  } else {
-    axes = EMPTY_AXES;
-    status = GamepadStatus.Disconnected;
   }
 
   return { status, axes, timestamp: performance.now() };
@@ -46,7 +43,7 @@ export function selectSpaceMouse(gamepad: Gamepad | null) {
 
   const gamepadName = gamepad.id.toLowerCase();
 
-  // id filter is borrowed from https://github.com/arpruss/spacemouse-tinkercad/blob/master/spacenav.js
+  // Credit: id filter is borrowed from https://github.com/arpruss/spacemouse-tinkercad/blob/master/spacenav.js
   const isIdRecognized =
     (gamepadName.indexOf("vendor: 046d") > -1 && gamepadName.indexOf("product: c6") > -1) ||
     (gamepadName.indexOf("vendor: 256f") > -1 && gamepadName.indexOf("product: c6") > -1) ||
