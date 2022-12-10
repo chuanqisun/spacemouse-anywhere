@@ -12,6 +12,7 @@
 - Adjustable dead zone
 - Adjustable limit
 - Per-DOF adjustment
+- Add notification bubble for status display
 
 - [x] Buffer architecture: read device @10ms, output integral to buffer, then read buffer @animateFrameRate
 - [x] Consider using iframe to ensure high device reading framerate
