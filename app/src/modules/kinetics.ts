@@ -31,10 +31,15 @@ export interface FrameBufferChange {
   status: GamepadStatus;
 }
 
-export function getFrameBufferChange(oldSnapshot: GamepadSnapshot, newSnapshot: GamepadSnapshot): FrameBufferChange {
+export function getInterpolatedFrame(
+  oldSnapshot: GamepadSnapshot,
+  newSnapshot: GamepadSnapshot,
+  transform: GamepadAxes
+): FrameBufferChange {
+  const interval = newSnapshot.timestamp - oldSnapshot.timestamp;
   return {
-    axes: newSnapshot.axes.map((axis, i) => axis - oldSnapshot.axes[i]) as any as GamepadAxes,
-    interval: newSnapshot.timestamp - oldSnapshot.timestamp,
+    axes: newSnapshot.axes.map((axis, i) => transform[i] * interval * axis) as any as GamepadAxes,
+    interval,
     status: newSnapshot.status,
   };
 }
@@ -49,7 +54,16 @@ export function getUpdatedBuffer(buffer: FrameBuffer, change: FrameBufferChange)
   };
 }
 
-export function getCleanBuffer(buffer: FrameBuffer): FrameBuffer {
+export function getInitialBuffer(): FrameBuffer {
+  return {
+    axes: EMPTY_AXES,
+    interval: 0,
+    status: GamepadStatus.Disconnected,
+    isRead: false,
+  };
+}
+
+export function getConsumedBuffer(buffer: FrameBuffer): FrameBuffer {
   return {
     axes: EMPTY_AXES,
     interval: 0,

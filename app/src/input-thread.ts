@@ -1,5 +1,11 @@
 import { GamepadAxes, GamepadSnapshot, GamepadStatus, getGamepadSnapshot } from "./modules/device";
-import { getScanner } from "./modules/kinetics";
+import {
+  getConsumedBuffer,
+  getInitialBuffer,
+  getInterpolatedFrame,
+  getScanner,
+  getUpdatedBuffer,
+} from "./modules/kinetics";
 import { tick } from "./utils/tick";
 
 export interface GamepadSnapshotBuffer {
@@ -7,45 +13,38 @@ export interface GamepadSnapshotBuffer {
   status: GamepadStatus;
 }
 
-let bufferAxes = [0, 0, 0, 0, 0, 0];
-let bufferInterval = 0;
-let bufferStatus = GamepadStatus.Disconnected;
-
-let averageInterval = 0;
-
 export default async function main() {
-  const multiplier = [2, 2, 2, 1, 1, 1];
+  const state = {
+    averageInterval: 0,
+    buffer: getInitialBuffer(),
+  };
 
-  const frameScanner = getScanner((oldFrame: GamepadSnapshot, newFrame: GamepadSnapshot) => {
-    const interval = newFrame.timestamp - oldFrame.timestamp;
-    bufferAxes = newFrame.axes.map(
-      (newValue, i) => bufferAxes[i] + (newValue + oldFrame.axes[i]) * interval * multiplier[i]
-    );
+  const multiplier = [2, 2, 2, 1, 1, 1] as const;
 
-    bufferInterval += interval;
-    bufferStatus = newFrame.status;
+  const frameScanner = getScanner((oldSnapshot: GamepadSnapshot, newSnapshot: GamepadSnapshot) => {
+    const change = getInterpolatedFrame(oldSnapshot, newSnapshot, multiplier);
+    state.buffer = getUpdatedBuffer(state.buffer, change);
   });
 
   // handle buffer read
   window.addEventListener("message", (e) => {
     if (e.data !== "requestframe") return;
 
-    averageInterval = averageInterval * 0.8 + bufferInterval * 0.2;
+    state.averageInterval = state.averageInterval * 0.8 + state.buffer.interval * 0.2;
     window.parent.postMessage(
       {
         type: "frame",
-        axes: bufferAxes,
-        status: bufferStatus,
+        axes: state.buffer.axes,
+        status: state.buffer.status,
       },
       "*"
     );
-    bufferAxes = [0, 0, 0, 0, 0, 0];
-    bufferInterval = 0;
+    state.buffer = getConsumedBuffer(state.buffer);
   });
 
   tick(() => frameScanner(getGamepadSnapshot()));
 
-  setInterval(() => console.log(`[perf] ${(1000 / averageInterval).toFixed(0)} FPS`), 1000);
+  setInterval(() => console.log(`[perf] ${(1000 / state.averageInterval).toFixed(0)} FPS`), 1000);
 }
 
 main();

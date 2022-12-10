@@ -10,6 +10,7 @@
 - Adjustable limit
 - Add notification bubble for status display
 - Prevent double render in the UI
+- Clutch mouse button click
 
 - [x] Buffer architecture: read device @10ms, output integral to buffer, then read buffer @animateFrameRate
 - [x] Consider using iframe to ensure high device reading framerate
