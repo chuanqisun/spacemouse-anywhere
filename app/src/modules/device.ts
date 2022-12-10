@@ -19,33 +19,32 @@ export type GamepadAxes = readonly [
   mouseRotateZ: number // Yaw left, Yaw right
 ];
 
+export type GamepadSelector = (gamepad: Gamepad | null) => gamepad is Gamepad;
+
 const EMPTY_AXES = Object.freeze([0, 0, 0, 0, 0, 0]) as GamepadAxes;
+const DISCONNECTED_SNAPSHOT: GamepadSnapshot = {
+  status: GamepadStatus.Disconnected,
+  axes: EMPTY_AXES,
+  timestamp: performance.now(),
+};
 
 /**
  * Get the current state of the device using the navigator gamepad API
  * Return null if device not found.
  */
-export const getGamepadSnapshot = (selectGamepad: (gamepad: Gamepad | null) => boolean) => {
-  const gamepad = navigator.getGamepads().filter(selectGamepad).reduce(selectFirstItem, null);
-  if (!gamepad)
-    return {
-      status: GamepadStatus.Disconnected,
-      axes: EMPTY_AXES,
-      timestamp: performance.now(),
-    };
+export const getGamepadSnapshot = (selectGamepad: GamepadSelector) => {
+  return navigator.getGamepads().filter(selectGamepad).map(toSnapshot)[0] ?? DISCONNECTED_SNAPSHOT;
+};
 
+export function toSnapshot(gamepad: Gamepad): GamepadSnapshot {
   return {
     status: gamepad.axes.some(Boolean) ? GamepadStatus.Active : GamepadStatus.Idle,
     axes: gamepad.axes as GamepadAxes,
     timestamp: performance.now(),
   };
-};
-
-export function selectFirstItem<T extends any>(_prev: any, _current: any, _index: number, array: T[]): T {
-  return array[0];
 }
 
-export function selectSpaceMouse(gamepad: Gamepad | null) {
+export function selectSpaceMouse(gamepad: Gamepad | null): gamepad is Gamepad {
   if (!gamepad?.id) return false;
   if (gamepad?.axes?.length !== 6) return false;
 
