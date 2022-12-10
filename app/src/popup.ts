@@ -2,7 +2,7 @@ import { GamepadStatus, getGamepadSnapshot, selectSpaceMouse } from "./modules/d
 import { tick } from "./utils/tick";
 
 export default async function main() {
-  const statusElement = document.getElementById("status") as HTMLElement;
+  const statusElement = document.getElementById("status") as HTMLInputElement;
   const xElement = document.getElementById("x") as HTMLMeterElement;
   const yElement = document.getElementById("y") as HTMLMeterElement;
   const zElement = document.getElementById("z") as HTMLMeterElement;
@@ -37,7 +37,7 @@ export default async function main() {
 
     if (Math.abs(value) <= deadZone) {
       meter.optimum = value ? Math.sign(value) : 1;
-    } else if (Math.abs(value) >= maxOut) {
+    } else if (Math.abs(value) > maxOut) {
       meter.optimum = -Math.sign(value);
     } else {
       meter.optimum = value;
@@ -46,7 +46,7 @@ export default async function main() {
 
   const onTick = () => {
     const snapshot = getGamepadSnapshot(selectSpaceMouse);
-    statusElement.innerText = decodeStatus(snapshot.status);
+    statusElement.value = decodeStatus(snapshot.status);
     const [x, y, z, rx, ry, rz] = snapshot.axes;
     updateVisualization(xElement, x);
     updateVisualization(yElement, y);

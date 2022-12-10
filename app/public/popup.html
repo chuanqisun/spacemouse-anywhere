@@ -8,36 +8,85 @@
     <link rel="stylesheet" href="./styles/popup.css" />
   </head>
   <body>
-    <div>Hello SpaceMouse pilot!</div>
     <button data-action="reload">Reload</button>
-    <div id="status">Disconnected</div>
+
     <fieldset>
-      <legend>X</legend>
-      <meter id="x" value="0" min="-1" max="1" low="-0.05" high="0.05" optimum="1"></meter>
-      <label>Min <input name="dzx" type="number" min="0" max="50" value="0" />%</label>
-      <label>Max <input name="mox" type="number" min="50" max="100" value="100" />%</label>
+      <legend>Axes</legend>
+      <label
+        ><span class="fieldname fieldname__block">Sensitivity</span
+        ><input name="sensitivity" type="range" min="1" max="9" value="5" step="1" list="tickmarks"
+      /></label>
+      <datalist id="tickmarks">
+        <option value="1"></option>
+        <option value="2"></option>
+        <option value="3"></option>
+        <option value="4"></option>
+        <option value="5"></option>
+        <option value="6"></option>
+        <option value="7"></option>
+        <option value="8"></option>
+        <option value="9"></option>
+      </datalist>
+      <br />
+      <label
+        ><span class="fieldname">X</span>
+        <meter id="x" value="0" min="-1" max="1" low="-0.05" high="0.05" optimum="1"></meter>
+      </label>
+      <label>Invert <input type="checkbox" /></label>
+      <br />
+      <label
+        ><span class="fieldname">Y</span>
+        <meter id="y" value="0" min="-1" max="1" low="-0.5" high="0.5"></meter>
+      </label>
+      <label>Invert <input type="checkbox" /></label>
+      <br />
+      <label
+        ><span class="fieldname">Z</span>
+        <meter id="z" value="0" min="-1" max="1" low="-0.5" high="0.5"></meter>
+      </label>
+      <label>Invert <input type="checkbox" /></label>
+      <br />
+      <label
+        ><span class="fieldname">RX</span>
+        <meter id="rx" value="0" min="-1" max="1" low="-0.5" high="0.5"></meter>
+      </label>
+      <label>Invert <input type="checkbox" /></label>
+      <br />
+      <label
+        ><span class="fieldname">RY</span>
+        <meter id="ry" value="0" min="-1" max="1" low="-0.5" high="0.5"></meter>
+      </label>
+      <label>Invert <input type="checkbox" /></label>
+      <br />
+      <label
+        ><span class="fieldname">RZ</span>
+        <meter id="rz" value="0" min="-1" max="1" low="-0.5" high="0.5"></meter>
+      </label>
       <label>Invert <input type="checkbox" /></label>
     </fieldset>
-    <fieldset>
-      <legend>Y</legend>
-      <meter id="y" value="0" min="-1" max="1" low="-0.5" high="0.5"></meter>
+    <fieldset class="status-fields">
+      <legend>Status</legend>
+      <label
+        ><span class="fieldname fieldname__block">Device state</span
+        ><input type="text" readonly id="status" value="Disconnected"
+      /></label>
+      <br />
+      <label>
+        <span class="fieldname fieldname__block">Scanning frequency</span>
+        <input id="scan" type="number" readonly /> Hz
+      </label>
+      <br />
+      <label>
+        <span class="fieldname fieldname__block">Frame rate</span>
+        <input id="fps" type="number" readonly /> FPS
+      </label>
+      <br />
+      <label>
+        <span class="fieldname fieldname__block">Latency</span>
+        <input id="latency" type="number" readonly /> ms
+      </label>
     </fieldset>
-    <fieldset>
-      <legend>Z</legend>
-      <meter id="z" value="0" min="-1" max="1" low="-0.5" high="0.5"></meter>
-    </fieldset>
-    <fieldset>
-      <legend>Rotate X</legend>
-      <meter id="rx" value="0" min="-1" max="1" low="-0.5" high="0.5"></meter>
-    </fieldset>
-    <fieldset>
-      <legend>Rotate Y</legend>
-      <meter id="ry" value="0" min="-1" max="1" low="-0.5" high="0.5"></meter>
-    </fieldset>
-    <fieldset>
-      <legend>Rotate Z</legend>
-      <meter id="rz" value="0" min="-1" max="1" low="-0.5" high="0.5"></meter>
-    </fieldset>
+    <footer><a href="#">Report a bug</a> | <a href="#">Open source</a></footer>
     <script type="module" src="./popup.js"></script>
   </body>
 </html>
