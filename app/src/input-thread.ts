@@ -38,10 +38,10 @@ export default async function main() {
   const handleFrameRequest = (e: MessageEvent) => {
     if (e.data.type !== "requestframe") return;
 
-    avgBufferInterval = avgBufferInterval * 0.9 + (e.data.timestamp - lastTick) * 0.1;
+    avgBufferInterval = avgBufferInterval * 0.93 + (e.data.timestamp - lastTick) * 0.07;
     lastTick = e.data.timestamp;
 
-    avgLatency = avgLatency * 0.9 + e.data.latency * 0.1;
+    avgLatency = avgLatency * 0.93 + e.data.latency * 0.07;
 
     // In the rare case output thread can request value faster than the input
     // Such request can be safely ignored
@@ -66,7 +66,7 @@ export default async function main() {
 
   const recurviseScan = () => {
     scanFrame(getGamepadSnapshot());
-    avgScanInterval = avgScanInterval * 0.9 + (performance.now() - lastScan) * 0.1;
+    avgScanInterval = avgScanInterval * 0.99 + (performance.now() - lastScan) * 0.01;
     lastScan = performance.now();
     setTimeout(recurviseScan);
   };
