@@ -12,3 +12,7 @@ A virtual driver that allows 3Dconnexion SpaceMouse to be used for panning and z
 - [bimawa](https://github.com/bimawa) - Debug
 
 \*Don't see your name here? Send me a PR.
+
+## See also
+
+- [SpaceMouse Driver for SketchUp Web](https://github.com/chuanqisun/sketchup-web-spacemouse)
