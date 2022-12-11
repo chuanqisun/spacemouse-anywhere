@@ -1,12 +1,14 @@
 # SpaceMouse Driver for SketchUp Web
 
-An Experimental Driver for the SketchUp Web app.
+Bring your [3DConnexion SpaceMouse](https://3dconnexion.com/us/spacemouse/) to [SketchUp Web](https://app.sketchup.com)
+
+![Screenshot](https://user-images.githubusercontent.com/1895289/206895040-978eadca-d61b-4b0f-8427-724b54e55bfa.png)
 
 ## System requirements
 
-- **Chromium-based browser only**. If there is enough interest, I'll consider Firefox as a second publish and maintenance target. Safari is not supported.
-- **All models of SpaceMouse**. I've only tested on the SpaceMouse Wireless in both wired and wireless mode. If your model doesn't work, please report it as bug.
-- **Windows** and **Linux** and fully supported. **MacOS** is experimentally supported. If you are Mac user, please report a bug if it does not work on your device.
+- **Chromium-based browser only**. If there is enough interest, I'll add Firefox. Safari is not supported.
+- **All models of SpaceMouse**, though I've only tested on the SpaceMouse Wireless in both wired and wireless mode. If your model doesn't work, please report it as bug.
+- **Windows** and **Linux** and fully supported. **MacOS** is experimentally supported and not tested. If you are Mac user, please [report a bug](https://github.com/chuanqisun/sketchup-web-spacemouse/issues/new) if it does not work on your device.
 
 ## Inside SketchUp
 
@@ -24,7 +26,7 @@ SketchUp Web does not provide official API for manipulating the camera or the sc
 
 ## Roadmap
 
-I'd like to gather feedback and build features that matter the most to the users. Here are a few ideas, not necessarily ranked in any order. If you have an idea, please let me know.
+I'd like to gather feedback and build features that matter the most to the users. Here are a few ideas, not necessarily ranked in any order. If you have an idea, please let me know by [submitting an issue](https://github.com/chuanqisun/sketchup-web-spacemouse/issues/new).
 
 - **Walk mode**: use SpaceMouse to manipulate camera and look around.
 - **Object mode**: use SpaceMouse to manipulate selected object, independent of other objects in the scene.
