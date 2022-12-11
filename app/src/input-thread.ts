@@ -7,6 +7,7 @@ import {
   getScanner,
   getUpdatedBuffer,
 } from "./modules/kinetics";
+import { getRollingAverager } from "./utils/get-rolling-avg";
 
 export interface GamepadSnapshotBuffer {
   axes: GamepadAxes;
@@ -30,18 +31,20 @@ export default async function main() {
     (oldSnapshot, newSnapshot) => (buffer = bufferUpdater(getInterpolatedFrame(oldSnapshot, newSnapshot)))
   );
 
-  let lastTick = performance.now();
+  let lastBufferRequest = performance.now();
+  let lastScan = performance.now();
 
-  let avgLatency = 0;
-  let avgBufferInterval = 0;
+  let avgLatency = getRollingAverager(0.05);
+  let avgBufferInterval = getRollingAverager(0.05);
+  let avgScanInterval = getRollingAverager(0.01);
 
   const handleFrameRequest = (e: MessageEvent) => {
     if (e.data.type !== "requestframe") return;
 
-    avgBufferInterval = avgBufferInterval * 0.93 + (e.data.timestamp - lastTick) * 0.07;
-    lastTick = e.data.timestamp;
+    avgBufferInterval.next(e.data.timestamp - lastBufferRequest);
+    lastBufferRequest = e.data.timestamp;
 
-    avgLatency = avgLatency * 0.93 + e.data.latency * 0.07;
+    avgLatency.next(e.data.latency);
 
     // In the rare case output thread can request value faster than the input
     // Such request can be safely ignored
@@ -61,12 +64,9 @@ export default async function main() {
 
   window.addEventListener("message", handleFrameRequest);
 
-  let lastScan = performance.now();
-  let avgScanInterval = 0;
-
   const recurviseScan = () => {
     scanFrame(getGamepadSnapshot());
-    avgScanInterval = avgScanInterval * 0.99 + (performance.now() - lastScan) * 0.01;
+    avgScanInterval.next(performance.now() - lastScan);
     lastScan = performance.now();
     setTimeout(recurviseScan);
   };
@@ -76,11 +76,10 @@ export default async function main() {
   chrome.runtime.onMessage.addListener((e, sender, sendReponse) => {
     if (e === "requestperf") {
       sendReponse({
-        avgBufferInterval,
-        avgLatency,
-        avgScanInterval,
+        avgBufferInterval: avgBufferInterval.value(),
+        avgLatency: avgLatency.value(),
+        avgScanInterval: avgScanInterval.value(),
       });
-      console.log("responded");
     }
   });
 }

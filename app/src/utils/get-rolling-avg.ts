@@ -1,3 +1,8 @@
-export function getRollingAvger(newValueWeight: number) {
-  return (avg: number, newValue: number) => avg * (1 - newValueWeight) + newValueWeight * newValue;
+export function getRollingAverager(newValueWeight: number) {
+  let avg = 0;
+
+  return {
+    next: (newValue: number) => (avg = (1 - newValueWeight) * avg + newValueWeight * newValue),
+    value: () => avg,
+  };
 }
