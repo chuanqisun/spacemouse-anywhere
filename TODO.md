@@ -8,7 +8,7 @@
 - Adjustable dead zone
 - Adjustable limit
 - Add notification bubble for status display
-- Address the relative Zoom problem
+- Address the relative Zoom problem (when close, Zoom is very slow)
 
 - [x] Minimum diagnostic UI
 - [x] Buffer architecture: read device @10ms, output integral to buffer, then read buffer @animateFrameRate
