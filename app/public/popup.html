@@ -9,84 +9,77 @@
   </head>
   <body>
     <form>
-      <fieldset>
-        <legend>Axes</legend>
-        <label
-          ><span class="fieldname fieldname__block">Sensitivity</span
-          ><input id="sensitivity" name="sensitivity" type="range" min="1" max="9" value="5" step="1" list="tickmarks"
-        /></label>
-        <datalist id="tickmarks">
-          <option value="1"></option>
-          <option value="2"></option>
-          <option value="3"></option>
-          <option value="4"></option>
-          <option value="5"></option>
-          <option value="6"></option>
-          <option value="7"></option>
-          <option value="8"></option>
-          <option value="9"></option>
-        </datalist>
-        <br />
-        <label
-          ><span class="fieldname">X</span>
+      <fieldset class="form-linear-layout">
+        <div>
+          <label
+            ><span class="fieldname fieldname__block">Sensitivity</span
+            ><input
+              id="sensitivity"
+              name="sensitivity"
+              type="range"
+              min="1"
+              max="9"
+              value="5"
+              step="1"
+              list="tickmarks"
+          /></label>
+          <datalist id="tickmarks">
+            <option value="1"></option>
+            <option value="2"></option>
+            <option value="3"></option>
+            <option value="4"></option>
+            <option value="5"></option>
+            <option value="6"></option>
+            <option value="7"></option>
+            <option value="8"></option>
+            <option value="9"></option>
+          </datalist>
+        </div>
+        <div class="form-row">
+          <label for="x">X</label> <label>Invert <input name="invertx" type="checkbox" /></label>
           <meter id="x" value="0" min="-1" max="1" low="-0.05" high="0.05" optimum="1"></meter>
-        </label>
-        <label>Invert <input name="invertx" type="checkbox" /></label>
-        <br />
-        <label
-          ><span class="fieldname">Y</span>
+        </div>
+        <div class="form-row">
+          <label for="y">Y</label><label>Invert <input name="inverty" type="checkbox" /></label>
           <meter id="y" value="0" min="-1" max="1" low="-0.5" high="0.5"></meter>
-        </label>
-        <label>Invert <input name="inverty" type="checkbox" /></label>
-        <br />
-        <label
-          ><span class="fieldname">Z</span>
+        </div>
+        <div class="form-row">
+          <label for="z">Z</label><label>Invert <input name="invertz" type="checkbox" /></label>
           <meter id="z" value="0" min="-1" max="1" low="-0.5" high="0.5"></meter>
-        </label>
-        <label>Invert <input name="invertz" type="checkbox" /></label>
-        <br />
-        <label
-          ><span class="fieldname">RX</span>
+        </div>
+        <div class="form-row">
+          <label for="rx">RX</label><label>Invert <input name="invertrx" type="checkbox" /></label>
           <meter id="rx" value="0" min="-1" max="1" low="-0.5" high="0.5"></meter>
-        </label>
-        <label>Invert <input name="invertrx" type="checkbox" /></label>
-        <br />
-        <label
-          ><span class="fieldname">RY</span>
+        </div>
+        <div class="form-row">
+          <label for="ry">RY</label><label>Invert <input name="invertry" type="checkbox" /></label>
           <meter id="ry" value="0" min="-1" max="1" low="-0.5" high="0.5"></meter>
-        </label>
-        <label>Invert <input name="invertry" type="checkbox" /></label>
-        <br />
-        <label
-          ><span class="fieldname">RZ</span>
+        </div>
+        <div class="form-row">
+          <label for="rz">RZ</label><label>Invert <input name="invertrz" type="checkbox" /></label>
           <meter id="rz" value="0" min="-1" max="1" low="-0.5" high="0.5"></meter>
+        </div>
+      </fieldset>
+      <fieldset class="form-master-detail-layout">
+        <div class="form-master-detail__master form-row">
+          <label for="status">Status</label>
+          <input type="text" readonly id="status" value="Disconnected" />
+        </div>
+        <label class="unit-display-layout">
+          <span class="fieldname fieldname__block">Input rate</span>
+          <input id="scan" type="number" readonly /><span>Hz</span>
         </label>
-        <label>Invert <input name="invertrz" type="checkbox" /></label>
+        <label class="unit-display-layout">
+          <span class="fieldname fieldname__block">Frame rate</span>
+          <input id="fps" type="number" readonly /> FPS
+        </label>
+        <label class="unit-display-layout">
+          <span class="fieldname fieldname__block">Latency</span>
+          <input id="latency" type="number" readonly /> ms
+        </label>
       </fieldset>
     </form>
-    <fieldset class="status-fields">
-      <legend>Stats</legend>
-      <label
-        ><span class="fieldname fieldname__block">Device state</span
-        ><input type="text" readonly id="status" value="Disconnected"
-      /></label>
-      <br />
-      <label>
-        <span class="fieldname fieldname__block">Scanning frequency</span>
-        <input id="scan" type="number" readonly /> Hz
-      </label>
-      <br />
-      <label>
-        <span class="fieldname fieldname__block">Frame rate</span>
-        <input id="fps" type="number" readonly /> FPS
-      </label>
-      <br />
-      <label>
-        <span class="fieldname fieldname__block">Latency</span>
-        <input id="latency" type="number" readonly /> ms
-      </label>
-    </fieldset>
-    <footer><a href="#">Report a bug</a> | <a href="#">Open source</a></footer>
+    <footer><a href="#">Report an issue</a></footer>
     <script type="module" src="./popup.js"></script>
   </body>
 </html>
