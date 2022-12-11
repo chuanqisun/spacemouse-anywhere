@@ -1,17 +1,15 @@
-- Gray out plugin on other webpages
-- Minimum diagnostic UI
-- Respect inversion from settings menu
-- Respect sensitity from settings menu
-- Removing the two-buffer smoothing technique. It's useless
-- Interpolate speed based two snapshot average
+- Clutch mouse button click
+- Dynamic sensitivity
+- Explore web stream based pipeline
+- Prevent inversion from settings menu
+- Prevent sensitity from settings menu
 - Separate camera mode and scene mode
 - Navigator Button map
 - Adjustable dead zone
 - Adjustable limit
 - Add notification bubble for status display
-- Prevent double render in the UI
-- Clutch mouse button click
 
+- [x] Minimum diagnostic UI
 - [x] Buffer architecture: read device @10ms, output integral to buffer, then read buffer @animateFrameRate
 - [x] Consider using iframe to ensure high device reading framerate
 - [x] Prevent memory leak from logging
