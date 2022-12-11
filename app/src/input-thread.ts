@@ -64,16 +64,13 @@ export default async function main() {
 
   window.addEventListener("message", handleFrameRequest);
 
-  const recurviseScan = () => {
+  setInterval(() => {
     scanFrame(getGamepadSnapshot());
     avgScanInterval.next(performance.now() - lastScan);
     lastScan = performance.now();
-    setTimeout(recurviseScan);
-  };
+  }, 0);
 
-  recurviseScan();
-
-  chrome.runtime.onMessage.addListener((e, sender, sendReponse) => {
+  chrome.runtime.onMessage.addListener((e, _sender, sendReponse) => {
     if (e === "requestperf") {
       sendReponse({
         avgBufferInterval: avgBufferInterval.value(),
