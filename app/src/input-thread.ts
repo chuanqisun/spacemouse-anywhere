@@ -6,7 +6,7 @@ import {
   getScanner,
   getUpdatedBuffer,
 } from "./modules/kinetics";
-import { tick } from "./utils/tick";
+import { getRollingAvger } from "./utils/get-rolling-avg";
 
 export interface GamepadSnapshotBuffer {
   axes: GamepadAxes;
@@ -15,10 +15,11 @@ export interface GamepadSnapshotBuffer {
 
 export default async function main() {
   let buffer = getInitialBuffer();
-  let averageInterval = 0;
+  let avgV2 = 0;
+  let avgIntervalV2 = getRollingAvger(0.1);
   let bufferUpdater = getUpdatedBuffer.bind(null, buffer);
 
-  const multiplier = [2, 2, 2, 1, 1, 1] as const;
+  const multiplier = [20, 20, 20, 10, 10, 10] as const;
 
   const frameScanner = getScanner<GamepadSnapshot>(
     (oldSnapshot, newSnapshot) => (buffer = bufferUpdater(getInterpolatedFrame(oldSnapshot, newSnapshot, multiplier)))
@@ -27,7 +28,12 @@ export default async function main() {
   const handleFrameRequest = (e: MessageEvent) => {
     if (e.data !== "requestframe") return;
 
-    averageInterval = averageInterval * 0.8 + buffer.interval * 0.2;
+    // In the rare case output thread can request value faster than the input
+    // Such request can be safely ignored
+    if (!buffer.interval) return;
+
+    avgV2 = avgIntervalV2(avgV2, buffer.interval);
+
     window.parent.postMessage(
       {
         type: "frame",
@@ -41,9 +47,10 @@ export default async function main() {
   };
 
   window.addEventListener("message", handleFrameRequest);
-  tick(() => frameScanner(getGamepadSnapshot()));
 
-  setInterval(() => console.log(`[perf] ${(1000 / averageInterval).toFixed(0)} FPS`), 1000);
+  setInterval(() => frameScanner(getGamepadSnapshot()), 2);
+
+  setInterval(() => console.log(`[perf] scan ${(1000 / avgV2).toFixed(0)} Hz`), 100);
 }
 
 main();
