@@ -10,7 +10,7 @@ An Experimental Driver for the SketchUp Web app.
 
 ## Inside SketchUp
 
-The extension allows scene manipuation in Orbit mode. There are some caveats:
+The extension allows scene manipuation in Orbit mode. You can access the preferences and debugging UI via the extension icon button. There are some caveats:
 
 1. Gravity cannot be suspended by holding <kbd>Ctrl</kbd>.
 2. Zooming becomes very slow when the camera approaches the surface of an object.
