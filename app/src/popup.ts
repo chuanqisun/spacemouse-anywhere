@@ -1,3 +1,4 @@
+import { PerfMetrics } from "./input-thread";
 import { GamepadStatus, getGamepadSnapshot } from "./modules/device";
 import { tick } from "./utils/tick";
 
@@ -9,6 +10,10 @@ export default async function main() {
   const rxElement = document.getElementById("rx") as HTMLMeterElement;
   const ryElement = document.getElementById("ry") as HTMLMeterElement;
   const rzElement = document.getElementById("rz") as HTMLMeterElement;
+
+  const scanElement = document.getElementById("scan") as HTMLInputElement;
+  const fpsElement = document.getElementById("fps") as HTMLInputElement;
+  const latencyElement = document.getElementById("latency") as HTMLInputElement;
 
   const handleClick = (e: Event) => {
     const action = (e.target as HTMLElement)?.closest(`[data-action]`)?.getAttribute("data-action");
@@ -44,7 +49,7 @@ export default async function main() {
     }
   };
 
-  const onTick = () => {
+  const onTick = async () => {
     const snapshot = getGamepadSnapshot();
     statusElement.value = decodeStatus(snapshot.status);
     const [x, y, z, rx, ry, rz] = snapshot.axes;
@@ -59,6 +64,13 @@ export default async function main() {
   window.addEventListener("click", handleClick);
 
   tick(onTick);
+
+  setInterval(async () => {
+    const perf = (await chrome.runtime.sendMessage("requestperf")) as PerfMetrics;
+    fpsElement.value = (1000 / perf.avgBufferInterval).toFixed(0);
+    latencyElement.value = perf.avgLatency.toFixed(0);
+    scanElement.value = (1000 / perf.avgScanInterval).toFixed(0);
+  }, 250);
 }
 
 main();

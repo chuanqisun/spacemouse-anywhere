@@ -41,18 +41,23 @@ export default async function main() {
   });
 
   let sendTime = 0;
-  let averageLatency = 0;
+  let latency = 0;
   const proxy = document.getElementById("spacemouse-extension") as HTMLIFrameElement;
   window.addEventListener("message", (e) => {
     if (e.data.type !== "frame") return;
     frameScanner(e.data as GamepadSnapshotBuffer);
-    averageLatency = averageLatency * 0.8 + (performance.now() - sendTime) * 0.2;
+    latency = performance.now() - sendTime;
   });
 
   tick(() => {
     sendTime = performance.now();
-    proxy.contentWindow?.postMessage("requestframe", "*");
+    proxy.contentWindow?.postMessage(
+      {
+        type: "requestframe",
+        timestamp: performance.now(),
+        latency,
+      },
+      "*"
+    );
   });
-
-  setInterval(() => console.log(`[perf] Latency ${averageLatency} ms`), 1000);
 }

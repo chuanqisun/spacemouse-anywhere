@@ -23,6 +23,7 @@ export interface FrameBuffer {
   interval: number;
   status: GamepadStatus;
   isRead: boolean;
+  frameCount: number;
 }
 
 export interface FrameBufferChange {
@@ -47,6 +48,7 @@ export function getUpdatedBuffer(buffer: FrameBuffer, change: FrameBufferChange)
     // Unless buffer was just read, the active status will be sticky
     status: buffer.isRead || buffer.status !== GamepadStatus.Active ? change.status : buffer.status,
     isRead: buffer.isRead,
+    frameCount: buffer.frameCount + 1,
   };
 }
 
@@ -56,6 +58,7 @@ export function getInitialBuffer(): FrameBuffer {
     interval: 0,
     status: GamepadStatus.Disconnected,
     isRead: false,
+    frameCount: 0,
   };
 }
 
@@ -65,6 +68,7 @@ export function getConsumedBuffer(buffer: FrameBuffer): FrameBuffer {
     interval: 0,
     status: buffer.status,
     isRead: true,
+    frameCount: 0,
   };
 }
 
