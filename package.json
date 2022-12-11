@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/osmoscraft/lens.git"
+    "url": "git+https://github.com/chuanqisun/sketchup-web-spacemouse.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/osmoscraft/lens/issues"
+    "url": "https://github.com/chuanqisun/sketchup-web-spacemouse/issues"
   },
-  "homepage": "https://github.com/osmoscraft/lens#readme",
+  "homepage": "https://github.com/chuanqisun/sketchup-web-spacemouse#readme",
   "workspaces": [
     "app",
     "packages/*"

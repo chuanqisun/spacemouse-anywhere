@@ -1,5 +1,5 @@
 {
-  "name": "Lens Dev Container",
+  "name": "Chrome Extension Dev Container",
   "build": {
     "dockerfile": "Dockerfile"
   },
