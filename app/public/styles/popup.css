@@ -11,7 +11,7 @@ body {
   font-size: 16px;
   padding: 8px 16px;
   display: grid;
-  gap: 8px;
+  gap: 16px;
 }
 
 *,
@@ -25,6 +25,11 @@ body {
 
 fieldset {
   border: none;
+}
+
+footer {
+  display: flex;
+  justify-content: space-between;
 }
 
 form {
@@ -41,26 +46,29 @@ hr {
 meter {
   height: 20px;
   width: 100%;
-  grid-column: 1 / -1;
+}
+
+input {
+  min-width: 0;
 }
 
 input[type="range"] {
   width: 100%;
 }
 
-input[type="number"] {
-  font-family: monospace;
-  text-align: end;
-  min-width: 0;
-}
-
 input[type="text"] {
-  grid-column: 1 / -1;
+  font-family: monospace;
+  padding-inline: 0.5ch;
 }
 
-footer {
+label:has(input[type="checkbox"]) {
   display: flex;
-  justify-content: space-between;
+  gap: 4px;
+  align-items: center;
+}
+input[type="checkbox"] {
+  height: 16px;
+  width: 16px;
 }
 
 .form-row {
@@ -79,7 +87,8 @@ footer {
   grid-template-columns: 1fr 1fr 1fr;
   gap: 4px 16px;
 }
-.form-master-detail__master {
+
+.grid-full-row {
   grid-column: 1 / -1;
 }
 
@@ -87,8 +96,4 @@ footer {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 4px;
-}
-
-.unit-display-layout .fieldname {
-  grid-column: 1 / -1;
 }

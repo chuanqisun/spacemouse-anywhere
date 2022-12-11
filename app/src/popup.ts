@@ -2,6 +2,7 @@ import { PerfMetrics } from "./input-thread";
 import { ConfigV1, getConfig, onConfigChange, setConfig } from "./modules/config";
 import { GamepadStatus, getGamepadSnapshot } from "./modules/device";
 import { tick } from "./utils/tick";
+import { updateIfChanged } from "./utils/update-if-changed";
 
 export default async function main() {
   const statusElement = document.getElementById("status") as HTMLInputElement;
@@ -42,14 +43,14 @@ export default async function main() {
     const deadZone = 0;
     const maxOut = 1;
 
-    meter.value = value;
+    updateIfChanged(meter, "value", value);
 
     if (Math.abs(value) <= deadZone) {
-      meter.optimum = value ? Math.sign(value) : 1;
+      updateIfChanged(meter, "optimum", value ? Math.sign(value) : 1);
     } else if (Math.abs(value) > maxOut) {
-      meter.optimum = -Math.sign(value);
+      updateIfChanged(meter, "optimum", -Math.sign(value));
     } else {
-      meter.optimum = value;
+      updateIfChanged(meter, "optimum", value);
     }
   };
 
