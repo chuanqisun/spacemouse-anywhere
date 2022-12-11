@@ -31,14 +31,10 @@ export interface FrameBufferChange {
   status: GamepadStatus;
 }
 
-export function getInterpolatedFrame(
-  oldSnapshot: GamepadSnapshot,
-  newSnapshot: GamepadSnapshot,
-  transform: GamepadAxes
-): FrameBufferChange {
+export function getInterpolatedFrame(oldSnapshot: GamepadSnapshot, newSnapshot: GamepadSnapshot): FrameBufferChange {
   const interval = newSnapshot.timestamp - oldSnapshot.timestamp;
   return {
-    axes: newSnapshot.axes.map((axis, i) => transform[i] * interval * axis) as any as GamepadAxes,
+    axes: newSnapshot.axes.map((axis, i) => interval * axis) as any as GamepadAxes,
     interval,
     status: newSnapshot.status,
   };

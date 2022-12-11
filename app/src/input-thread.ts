@@ -19,10 +19,10 @@ export default async function main() {
   let avgIntervalV2 = getRollingAvger(0.1);
   let bufferUpdater = getUpdatedBuffer.bind(null, buffer);
 
-  const multiplier = [20, 20, 20, 10, 10, 10] as const;
+  const multiplier = [10, 10, 10, 5, 5, 5] as const;
 
   const frameScanner = getScanner<GamepadSnapshot>(
-    (oldSnapshot, newSnapshot) => (buffer = bufferUpdater(getInterpolatedFrame(oldSnapshot, newSnapshot, multiplier)))
+    (oldSnapshot, newSnapshot) => (buffer = bufferUpdater(getInterpolatedFrame(oldSnapshot, newSnapshot)))
   );
 
   const handleFrameRequest = (e: MessageEvent) => {
@@ -37,7 +37,7 @@ export default async function main() {
     window.parent.postMessage(
       {
         type: "frame",
-        axes: buffer.axes,
+        axes: buffer.axes.map((axis, i) => axis * multiplier[i]),
         status: buffer.status,
       },
       "*"
@@ -48,7 +48,7 @@ export default async function main() {
 
   window.addEventListener("message", handleFrameRequest);
 
-  setInterval(() => frameScanner(getGamepadSnapshot()), 2);
+  setInterval(() => frameScanner(getGamepadSnapshot()), 10);
 
   setInterval(() => console.log(`[perf] scan ${(1000 / avgV2).toFixed(0)} Hz`), 100);
 }
