@@ -12,7 +12,7 @@ An Experimental Driver for the SketchUp Web app.
 
 The extension allows scene manipuation in Orbit mode. You can access the preferences and debugging UI via the extension icon button. There are some caveats:
 
-1. Gravity cannot be suspended by holding <kbd>Ctrl</kbd>.
+1. Rolling Left/Right is ignored. Gravity cannot be suspended by holding <kbd>Ctrl</kbd>.
 2. Zooming becomes very slow when the camera approaches the surface of an object.
 3. Large models (>10MB) may experience jitter.
 
@@ -23,6 +23,7 @@ I'd like to gather feedback and build features that matter the most to the users
 - **Walk mode**: use SpaceMouse to manipulate camera and look around.
 - **Object mode**: use SpaceMouse to manipulate selected object, independent of other objects in the scene.
 - **Button binding**: bind SpaceMouse buttons to commands in SketchUp.
+- **6-DOF**: Add support for rolling left/right and gravity suspension
 
 ## Disclaimer
 
