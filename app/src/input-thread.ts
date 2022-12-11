@@ -1,3 +1,4 @@
+import { ConfigV1, CONFIG_KEY_V1, DEFAULT_CONFIG, getMultiplier, onConfigChange } from "./modules/config";
 import { GamepadAxes, GamepadSnapshot, GamepadStatus, getGamepadSnapshot } from "./modules/device";
 import {
   FrameBufferChange,
@@ -25,7 +26,10 @@ export default async function main() {
 
   let bufferUpdater = (change: FrameBufferChange) => getUpdatedBuffer(buffer, change);
 
-  const multiplier = [4, 4, 4, 2, 2, 2] as const;
+  const config = ((await chrome.storage.sync.get(CONFIG_KEY_V1))[CONFIG_KEY_V1] as ConfigV1) ?? DEFAULT_CONFIG;
+  let multiplier = getMultiplier(config);
+
+  console.log("[config] effecive multiplier", multiplier);
 
   const scanFrame = getScanner<GamepadSnapshot>(
     (oldSnapshot, newSnapshot) => (buffer = bufferUpdater(getInterpolatedFrame(oldSnapshot, newSnapshot)))
@@ -78,6 +82,11 @@ export default async function main() {
         avgScanInterval: avgScanInterval.value(),
       });
     }
+  });
+
+  onConfigChange((newValue) => {
+    multiplier = getMultiplier(newValue);
+    console.log("[config] effecive multiplier", multiplier);
   });
 }
 

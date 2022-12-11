@@ -1,9 +1,14 @@
 import { PerfMetrics } from "./input-thread";
+import { ConfigV1, getConfig, onConfigChange, setConfig } from "./modules/config";
 import { GamepadStatus, getGamepadSnapshot } from "./modules/device";
 import { tick } from "./utils/tick";
 
 export default async function main() {
   const statusElement = document.getElementById("status") as HTMLInputElement;
+  const configForm = document.querySelector("form")!;
+
+  const sensitivity = document.getElementById("sensitivity") as HTMLInputElement;
+
   const xElement = document.getElementById("x") as HTMLMeterElement;
   const yElement = document.getElementById("y") as HTMLMeterElement;
   const zElement = document.getElementById("z") as HTMLMeterElement;
@@ -11,17 +16,16 @@ export default async function main() {
   const ryElement = document.getElementById("ry") as HTMLMeterElement;
   const rzElement = document.getElementById("rz") as HTMLMeterElement;
 
+  const invertxElement = configForm.querySelector<HTMLInputElement>(`[name="invertx"]`)!;
+  const invertyElement = configForm.querySelector<HTMLInputElement>(`[name="inverty"]`)!;
+  const invertzElement = configForm.querySelector<HTMLInputElement>(`[name="invertz"]`)!;
+  const invertrxElement = configForm.querySelector<HTMLInputElement>(`[name="invertrx"]`)!;
+  const invertryElement = configForm.querySelector<HTMLInputElement>(`[name="invertry"]`)!;
+  const invertrzElement = configForm.querySelector<HTMLInputElement>(`[name="invertrz"]`)!;
+
   const scanElement = document.getElementById("scan") as HTMLInputElement;
   const fpsElement = document.getElementById("fps") as HTMLInputElement;
   const latencyElement = document.getElementById("latency") as HTMLInputElement;
-
-  const handleClick = (e: Event) => {
-    const action = (e.target as HTMLElement)?.closest(`[data-action]`)?.getAttribute("data-action");
-    switch (action) {
-      case "reload":
-        return chrome.runtime.reload();
-    }
-  };
 
   const decodeStatus = (status: GamepadStatus) => {
     switch (status) {
@@ -61,7 +65,33 @@ export default async function main() {
     updateVisualization(rzElement, rz);
   };
 
-  window.addEventListener("click", handleClick);
+  configForm.addEventListener("input", () => {
+    const newConfig: ConfigV1 = {
+      sensitivity: parseInt(sensitivity.value),
+      x: invertxElement.checked ? -1 : 1,
+      y: invertyElement.checked ? -1 : 1,
+      z: invertzElement.checked ? -1 : 1,
+      rx: invertrxElement.checked ? -1 : 1,
+      ry: invertryElement.checked ? -1 : 1,
+      rz: invertrzElement.checked ? -1 : 1,
+    };
+
+    setConfig(newConfig);
+  });
+
+  const applyConfig = (config: ConfigV1) => {
+    console.log("[config] updated", config);
+    sensitivity.value = config.sensitivity.toString();
+    invertxElement.checked = config.x < 0;
+    invertyElement.checked = config.y < 0;
+    invertzElement.checked = config.z < 0;
+    invertrxElement.checked = config.rx < 0;
+    invertryElement.checked = config.ry < 0;
+    invertrzElement.checked = config.rz < 0;
+  };
+
+  getConfig().then(applyConfig);
+  onConfigChange(applyConfig);
 
   tick(onTick);
 
