@@ -23,6 +23,14 @@ body {
   font-size: inherit;
 }
 
+a {
+  color: inherit;
+  opacity: 0.75;
+}
+a:where(:hover, :focus) {
+  opacity: 1;
+}
+
 fieldset {
   border: none;
 }
