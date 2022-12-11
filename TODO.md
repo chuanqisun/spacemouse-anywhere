@@ -1,4 +1,4 @@
-- Clutch mouse button click
+- Clutch mouse button click (share the begin/end click for pan and rotate)
 - Dynamic sensitivity
 - Explore web stream based pipeline
 - Prevent inversion from settings menu
@@ -8,6 +8,7 @@
 - Adjustable dead zone
 - Adjustable limit
 - Add notification bubble for status display
+- Address the relative Zoom problem
 
 - [x] Minimum diagnostic UI
 - [x] Buffer architecture: read device @10ms, output integral to buffer, then read buffer @animateFrameRate
