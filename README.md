@@ -31,4 +31,4 @@ This project is not endorsed by Trimble or 3dconnexion, though I'm happy to coll
 ## Credit
 
 - [SpaceMouse TinkerCAD](https://github.com/arpruss/spacemouse-tinkercad)
-- [Figma Plugin SpaceMouse](https://github.com/chuanqisun/figma-plugin-spacemouse)
+- [SpaceMouse Driver for Figma](https://github.com/chuanqisun/figma-plugin-spacemouse)
