@@ -38,9 +38,9 @@ export default async function main() {
   let lastBufferRequest = performance.now();
   let lastScan = performance.now();
 
-  let avgLatency = getRollingAverager(0.05);
-  let avgBufferInterval = getRollingAverager(0.05);
-  let avgScanInterval = getRollingAverager(0.01);
+  let avgLatency = getRollingAverager(0.1);
+  let avgBufferInterval = getRollingAverager(0.1);
+  let avgScanInterval = getRollingAverager(0.04);
 
   const handleFrameRequest = (e: MessageEvent) => {
     if (e.data.type !== "requestframe") return;
