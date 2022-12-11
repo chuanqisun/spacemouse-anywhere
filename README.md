@@ -2,7 +2,7 @@
 
 Bring your [3DConnexion SpaceMouse](https://3dconnexion.com/us/spacemouse/) to [SketchUp Web](https://app.sketchup.com)
 
-![Screenshot](https://user-images.githubusercontent.com/1895289/206895040-978eadca-d61b-4b0f-8427-724b54e55bfa.png)
+![Screenshot](./media/Comp.png)
 
 ## System requirements
 
