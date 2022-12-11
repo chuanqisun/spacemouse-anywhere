@@ -16,6 +16,12 @@ The extension allows scene manipuation in Orbit mode. You can access the prefere
 2. Zooming becomes very slow when the camera approaches the surface of an object.
 3. Large models (>10MB) may experience jitter.
 
+## How does this work?
+
+SpaceMouse input is scanned from the browser [Gamepad API](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/getGamepads) and works across platforms.
+
+SketchUp Web does not provide official API for manipulating the camera or the scene. The extension simulates keyboard and mouse drag/scroll events to perform the navigation.
+
 ## Roadmap
 
 I'd like to gather feedback and build features that matter the most to the users. Here are a few ideas, not necessarily ranked in any order. If you have an idea, please let me know.
@@ -23,7 +29,8 @@ I'd like to gather feedback and build features that matter the most to the users
 - **Walk mode**: use SpaceMouse to manipulate camera and look around.
 - **Object mode**: use SpaceMouse to manipulate selected object, independent of other objects in the scene.
 - **Button binding**: bind SpaceMouse buttons to commands in SketchUp.
-- **6-DOF**: Add support for rolling left/right and gravity suspension
+- **6-DOF**: add support for rolling left/right and gravity suspension.
+- **Generic joystick**: use XBox Gamepad or other USB Joystick to control SketchUp
 
 ## Disclaimer
 
