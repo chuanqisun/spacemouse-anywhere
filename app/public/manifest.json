@@ -17,7 +17,7 @@
     "48": "/images/icon@48.png",
     "128": "/images/icon@128.png"
   },
-  "permissions": ["scripting", "storage"],
+  "permissions": ["storage"],
   "content_scripts": [
     {
       "matches": ["https://app.sketchup.com/*"],

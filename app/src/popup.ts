@@ -97,10 +97,12 @@ export default async function main() {
   tick(onTick);
 
   setInterval(async () => {
-    const perf = (await chrome.runtime.sendMessage("requestperf")) as PerfMetrics;
-    fpsElement.value = (1000 / perf.avgBufferInterval).toFixed(0);
-    latencyElement.value = perf.avgLatency.toFixed(0);
-    scanElement.value = (1000 / perf.avgScanInterval).toFixed(0);
+    try {
+      const perf = (await chrome.runtime.sendMessage("requestperf")) as PerfMetrics;
+      fpsElement.value = (1000 / perf.avgBufferInterval).toFixed(0);
+      latencyElement.value = perf.avgLatency.toFixed(0);
+      scanElement.value = (1000 / perf.avgScanInterval).toFixed(0);
+    } catch {}
   }, 200);
 }
 
