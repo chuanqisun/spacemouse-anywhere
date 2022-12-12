@@ -5,8 +5,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "npm run dev -w app",
-    "build": "npm run build -w app"
+    "dev": "npm run dev -w appss/sketchup",
+    "build": "npm run build -w apps/sketchup"
   },
   "repository": {
     "type": "git",
@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/chuanqisun/sketchup-web-spacemouse#readme",
   "workspaces": [
-    "app",
+    "apps/*",
     "packages/*"
   ],
   "devDependencies": {
