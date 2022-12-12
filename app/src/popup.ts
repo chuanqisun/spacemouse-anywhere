@@ -102,7 +102,9 @@ export default async function main() {
       fpsElement.value = (1000 / perf.avgBufferInterval).toFixed(0);
       latencyElement.value = perf.avgLatency.toFixed(0);
       scanElement.value = (1000 / perf.avgScanInterval).toFixed(0);
-    } catch {}
+    } catch {
+      // sendMessage will throw Error if the activeTab is not the SketchUp app
+    }
   }, 200);
 }
 
