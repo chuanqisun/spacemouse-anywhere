@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "npm run dev -w appss/sketchup",
+    "dev": "npm run dev -w apps/sketchup",
     "build": "npm run build -w apps/sketchup"
   },
   "repository": {
