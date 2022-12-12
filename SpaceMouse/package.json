@@ -1,0 +1,17 @@
+{
+	"name": "figma-plugin-spacemouse",
+	"version": "1.4.0",
+	"private": true,
+	"description": "Your Figma Plugin",
+	"main": "code.js",
+	"scripts": {
+		"build": "tsc -p tsconfig.json",
+		"watch": "npm run build -- --watch"
+	},
+	"author": "",
+	"license": "",
+	"dependencies": {
+		"@figma/plugin-typings": "*",
+		"typescript": "*"
+	}
+}
