@@ -4,6 +4,10 @@ Bring your [3DConnexion SpaceMouse](https://3dconnexion.com/us/spacemouse/) to [
 
 ![Screenshot](../../media/sketchup/Comp.png)
 
+## Install
+
+[![Install widget from Chrome Web Store](../../media/sketchup/install-badge.svg)](https://chrome.google.com/webstore/detail/spacemouse-driver-for-ske/ggjjgcdhnigahiokgcknccnkcddgjknf)
+
 ## System requirements
 
 - **Chromium-based browser only**. If there is enough interest, I'll add Firefox. Safari is not supported.
