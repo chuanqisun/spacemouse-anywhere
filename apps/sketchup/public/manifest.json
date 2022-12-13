@@ -1,7 +1,7 @@
 {
   "name": "SpaceMouse Driver for SketchUp Web",
   "description": "Use your SpaceMouse inside the SketchUp Web app",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "manifest_version": 3,
   "action": {
     "default_popup": "popup.html",
