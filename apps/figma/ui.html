@@ -314,18 +314,23 @@
 
 		_getSpaceNavigator() {
 			const gamepadList = [...navigator.getGamepads()];
-			return gamepadList.find((gamepad) => this.isSpaceMouse(gamepad));
+			return gamepadList.filter(isAxesGamepad).find((gamepad) => this._isSpaceMouse(gamepad) || this._isSparkFunProMicro(gamepad));
 		}
 
 		/**
-		 *
 		 * @param {Gamepad} gamepad
 		 */
-		isSpaceMouse(gamepad) {
+		_isAxesGamepad(gamepad) {
 			if (!gamepad) return false;
 			if (!gamepad.id) return false;
 			if (!gamepad.axes) return false;
-			//if (gamepad.axes.length !== 6) return false;
+		}
+
+		/**
+		 * @param {Gamepad} gamepad
+		 */
+		_isSpaceMouse(gamepad) {
+			if (gamepad.axes.length !== 6) return false;
 
 			const gamepadName = gamepad.id.toLowerCase();
 
@@ -337,10 +342,18 @@
 				gamepadName.indexOf("space navigator") > -1 ||
 				gamepadName.indexOf("spacemouse") > -1 ||
 				gamepadName.indexOf("space mouse") > -1 ||
-				gamepadName.indexOf("vendor: 1b4f") > -1 ||
-				gamepadName.indexOf("vendor: SparkFun Pro Micro") > -1;
+				gamepadName.indexOf("vendor: 1b4f") > -1;
 
 			return isIdRecognized;
+		}
+
+		/**
+		 * @param {Gamepad} gamepad
+		 */
+		_isSparkFunProMicro(gamepad) {
+			const gamepadName = gamepad.id.toLowerCase();
+
+			return gamepadName.indexOf("vendor: SparkFun Pro Micro") > -1;
 		}
 	}
 
