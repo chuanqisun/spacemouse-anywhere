@@ -341,8 +341,7 @@
 				gamepadName.indexOf("spacenavigator") > -1 ||
 				gamepadName.indexOf("space navigator") > -1 ||
 				gamepadName.indexOf("spacemouse") > -1 ||
-				gamepadName.indexOf("space mouse") > -1 ||
-				gamepadName.indexOf("vendor: 1b4f") > -1;
+				gamepadName.indexOf("space mouse") > -1;
 
 			return isIdRecognized;
 		}
@@ -353,7 +352,7 @@
 		_isSparkFunProMicro(gamepad) {
 			const gamepadName = gamepad.id.toLowerCase();
 
-			return gamepadName.indexOf("vendor: SparkFun Pro Micro") > -1;
+			return gamepadName.indexOf("vendor: 1b4f") > -1 || gamepadName.indexOf("vendor: SparkFun Pro Micro") > -1;
 		}
 	}
 
