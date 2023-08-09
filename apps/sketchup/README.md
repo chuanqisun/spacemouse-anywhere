@@ -12,7 +12,7 @@ Bring your [3DConnexion SpaceMouse](https://3dconnexion.com/us/spacemouse/) to [
 
 - **Chromium-based browser only**. If there is enough interest, I'll add Firefox. Safari is not supported.
 - **All models of SpaceMouse**, though I've only tested on the SpaceMouse Wireless in both wired and wireless mode. If your model doesn't work, please report it as bug.
-- **Windows** and **Linux** and fully supported. **MacOS** is experimentally supported and not tested. If you are Mac user, please [report a bug](https://github.com/chuanqisun/sketchup-web-spacemouse/issues/new) if it does not work on your device.
+- **Windows** and **Linux** are fully supported. **MacOS** is experimentally supported and not tested. If you are Mac user, please [report a bug](https://github.com/chuanqisun/sketchup-web-spacemouse/issues/new) if it does not work on your device.
 
 ## Inside SketchUp
 
