@@ -70,11 +70,20 @@
 		--z: 0px;
 	}
 
+	input,
+	button {
+		cursor: pointer;
+	}
+
 	button {
 		background-color: transparent;
-		border: 1px solid rgba(0, 0, 0, 0.8);
+		border: 1px solid #ccc;
 		border-radius: 6px;
 		height: 30px;
+	}
+	button:where(:hover, :focus) {
+		border-color: #666;
+		background-color: #eee;
 	}
 
 	.columns {
