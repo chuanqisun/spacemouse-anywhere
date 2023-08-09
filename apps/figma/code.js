@@ -6,7 +6,7 @@ let restoreSize;
 // posted message.
 figma.ui.onmessage = (msg) => {
     if (msg.type === "minimize") {
-        figma.ui.resize(72, 24);
+        figma.ui.resize(72, 30);
         restoreSize = msg.restoreSize;
         console.log(restoreSize);
     }
