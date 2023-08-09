@@ -1,4 +1,8 @@
-# Version 6 on Marf 20, 2021
+# Version 7 on August 8, 2023
+
+- Added minimize toggle
+
+# Version 6 on March 20, 2021
 
 - Prevents jittering or accidental movement with a subtle threshold of minimum activation force.
 - Allow independent configuration of 2D/3D perspective, and Scene/Camera manipulation target.

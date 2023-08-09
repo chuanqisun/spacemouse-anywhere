@@ -1,9 +1,25 @@
 figma.showUI(__html__);
+let restoreSize: { width: number; height: number } | null;
 
 // Calls to "parent.postMessage" from within the HTML page will trigger this
 // callback. The callback will be passed the "pluginMessage" property of the
 // posted message.
 figma.ui.onmessage = (msg) => {
+	if (msg.type === "minimize") {
+		figma.ui.resize(72, 24);
+		restoreSize = msg.restoreSize;
+		console.log(restoreSize);
+	}
+
+	if (msg.type === "maximize") {
+		if (restoreSize) {
+			figma.ui.resize(restoreSize.width, restoreSize.height);
+			restoreSize = null;
+		} else {
+			figma.showUI(__html__);
+		}
+	}
+
 	// One way of distinguishing between different types of messages sent from
 	// your HTML page is to use an object with a "type" property like this.
 	if (msg.type === "mouse-update") {

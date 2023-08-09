@@ -1,4 +1,4 @@
-<div class="ui">
+<div id="app-root" class="ui">
 	<div class="viz">
 		<div class="viz-cell">
 			<div class="viz-label">X / Y</div>
@@ -13,9 +13,10 @@
 			</div>
 		</div>
 	</div>
-	<div class="footer">
+	<div class="actions">
+		<button id="toggle-size" class="actions__cover">Show less</button>
 		<button id="open-preferences">Preferences</button>
-		<div id="status">Unknown</div>
+		<div class="actions__tail actions__info" id="status">Unknown</div>
 	</div>
 	<div id="preferences-form">
 		<div class="field">
@@ -58,7 +59,7 @@
 		<div class="actions">
 			<button id="close-preferences">Done</button>
 			<button id="reset-preferences">Reset</button>
-			<span class="version">v1.3.0</span>
+			<span class="actions__tail actions__info">v1.4.0</span>
 		</div>
 	</div>
 </div>
@@ -136,10 +137,52 @@
 		grid-template-rows: 100px 1fr;
 		height: 100%;
 		align-items: center;
-		font: normal 400 11px/16px Inter, Roboto, sans-serif;
+		font:
+			normal 400 11px/16px Inter,
+			Roboto,
+			sans-serif;
 		padding: 8px;
 		box-sizing: border-box;
 	}
+	.minimized {
+		margin: 0;
+		overflow: hidden;
+
+		.viz {
+			display: none;
+		}
+
+		.actions {
+			height: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+
+			:not(.actions__info, .actions__cover) {
+				display: none;
+			}
+
+			.actions__info {
+				text-align: center;
+			}
+
+			.actions__cover {
+				position: absolute;
+				left: 0;
+				right: 0;
+				opacity: 0;
+				top: 0;
+				bottom: 0;
+				height: auto;
+			}
+		}
+
+		.ui {
+			display: block;
+			padding: 0;
+		}
+	}
+
 	#preferences-form {
 		display: none;
 		will-change: display;
@@ -170,12 +213,22 @@
 		display: grid;
 		grid-gap: 8px;
 	}
+
+	.actions__info {
+		color: #aaa;
+	}
+
+	.actions__tail {
+		text-align: end;
+	}
+
 	.viz {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		justify-items: center;
 		grid-gap: 4px;
 	}
+
 	.viz-cell {
 		width: 100%;
 		display: flex;
@@ -226,16 +279,10 @@
 		justify-content: space-between;
 		align-items: flex-end;
 	}
-	#status {
-		color: #aaa;
-	}
-	.version {
-		text-align: end;
-		color: #aaa;
-	}
 </style>
 <script>
 	const MIN_ACTIVATION_FORCE = 0.015;
+	const MINIMIZED_CLASSNAME = "minimized";
 
 	class Vector2D {
 		constructor(x, y) {
@@ -430,7 +477,7 @@
 						zoomMultiplier,
 					},
 				},
-				"*"
+				"*",
 			);
 		}
 
@@ -464,17 +511,20 @@
 
 			this.statusElement = document.getElementById("status");
 			this.preferencesFormElement = document.getElementById("preferences-form");
+			this.toggleSizeButton = document.getElementById("toggle-size");
 			this.openPreferencesButton = document.getElementById("open-preferences");
 			this.closePreferencesButton = document.getElementById("close-preferences");
 			this.resetPreferencesButton = document.getElementById("reset-preferences");
 
+			this.toggleSizeButton.addEventListener("click", () => this.onToggleSize());
 			this.openPreferencesButton.addEventListener("click", () => this.preferencesFormElement.classList.add("active"));
-
 			this.closePreferencesButton.addEventListener("click", () => this.preferencesFormElement.classList.remove("active"));
-
 			this.resetPreferencesButton.addEventListener("click", () => this.resetPreferences());
-
 			this.preferencesFormElement.addEventListener("change", (e) => this.updateValues(e));
+		}
+
+		get isMinimized() {
+			return document.body.classList.contains(MINIMIZED_CLASSNAME);
 		}
 
 		get perspective() {
@@ -498,6 +548,20 @@
 				document.querySelector(`[name="manipulation"][value="scene"]`).checked = true;
 			} else {
 				document.querySelector(`[name="manipulation"][value="camera"]`).checked = true;
+			}
+		}
+
+		onToggleSize() {
+			if (this.isMinimized) {
+				parent.postMessage({ pluginMessage: { type: "maximize" } }, "*");
+				this.maximize();
+			} else {
+				const restoreSize = {
+					width: document.documentElement.clientWidth,
+					height: document.documentElement.clientHeight,
+				};
+				parent.postMessage({ pluginMessage: { type: "minimize", restoreSize } }, "*");
+				this.minimize();
 			}
 		}
 
@@ -567,7 +631,7 @@
 						preferences,
 					},
 				},
-				"*"
+				"*",
 			);
 		}
 
@@ -584,6 +648,15 @@
 			this.rootStyle.setProperty("--y", `${fY * 100}px`);
 			this.rootStyle.setProperty("--z", `${fZ * 50}px`);
 		}
+
+		minimize() {
+			this.toggleSizeButton.title = "Click to show more";
+			document.body.classList.add(MINIMIZED_CLASSNAME);
+		}
+		maximize() {
+			this.toggleSizeButton.title = "";
+			document.body.classList.remove(MINIMIZED_CLASSNAME);
+		}
 	}
 
 	class Application {
@@ -597,12 +670,6 @@
 			this.requestPreferences();
 		}
 
-		usePreferences(preferences) {
-			console.log("[ui] new preference available", preferences);
-			this.userInterface.usePreferences(preferences);
-			this.physicsEngine.usePreferences(preferences);
-		}
-
 		requestPreferences() {
 			parent.postMessage(
 				{
@@ -610,8 +677,14 @@
 						type: "get-preferences",
 					},
 				},
-				"*"
+				"*",
 			);
+		}
+
+		usePreferences(preferences) {
+			console.log("[ui] new preference available", preferences);
+			this.userInterface.usePreferences(preferences);
+			this.physicsEngine.usePreferences(preferences);
 		}
 
 		update() {
