@@ -10,8 +10,8 @@
 	},
 	"author": "",
 	"license": "",
-	"dependencies": {
-		"@figma/plugin-typings": "*",
-		"typescript": "*"
+	"devDependencies": {
+		"@figma/plugin-typings": "^1.72.0",
+		"typescript": "^5.1.6"
 	}
 }
