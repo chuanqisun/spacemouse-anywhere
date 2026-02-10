@@ -1,4 +1,4 @@
-figma.showUI(__html__);
+figma.showUI(__html__, { width: 300, height: 280 });
 let restoreSize: { width: number; height: number } | null;
 
 // Calls to "parent.postMessage" from within the HTML page will trigger this
@@ -16,7 +16,7 @@ figma.ui.onmessage = (msg) => {
 			figma.ui.resize(restoreSize.width, restoreSize.height);
 			restoreSize = null;
 		} else {
-			figma.showUI(__html__);
+			figma.showUI(__html__, { width: 300, height: 280 });
 		}
 	}
 
