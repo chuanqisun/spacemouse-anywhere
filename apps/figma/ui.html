@@ -20,6 +20,13 @@
 	</div>
 	<div id="preferences-form">
 		<div class="field">
+			<div class="field-title field-title--pad-below">Input source</div>
+			<div class="radio-options">
+				<label class="radio-label"><input type="radio" name="inputSource" value="gamepad" checked />Gamepad API</label>
+				<label class="radio-label"><input type="radio" name="inputSource" value="websocket" />WebSocket (macOS proxy)</label>
+			</div>
+		</div>
+		<div class="field">
 			<div class="field-title field-title--pad-below">Orientation</div>
 			<div class="radio-options">
 				<label class="radio-label"><input type="radio" id="perspective-2d" name="perspective" value="2d" checked />2D</label>
@@ -205,9 +212,10 @@
 		left: 0;
 		right: 0;
 		bottom: 0;
-		grid-template:
-			"field-1 field-2" 68px
-			"field-3 field-4" 60px / 1fr 1fr;
+		gap: 4px;
+		grid-template-columns: 1fr 1fr;
+		grid-auto-rows: min-content;
+		align-content: start;
 	}
 
 	.field-title {
@@ -340,9 +348,6 @@
 		}
 	}
 
-	/**
-	 * Gamepad API wrapper for the SpaceNavigator axes
-	 */
 	class SpaceNavigator {
 		getData() {
 			const { status, axes } = this._update();
@@ -373,26 +378,16 @@
 			return gamepadList.filter(this._isAxesGamepad).find((gamepad) => this._isSpaceMouse(gamepad) || this._isSparkFunProMicro(gamepad));
 		}
 
-		/**
-		 * @param {Gamepad} gamepad
-		 */
 		_isAxesGamepad(gamepad) {
 			if (!gamepad) return false;
 			if (!gamepad.id) return false;
 			if (!gamepad.axes) return false;
-
 			return true;
 		}
 
-		/**
-		 * @param {Gamepad} gamepad
-		 */
 		_isSpaceMouse(gamepad) {
 			if (gamepad.axes.length !== 6) return false;
-
 			const gamepadName = gamepad.id.toLowerCase();
-
-			// id filter is borrowed from https://github.com/arpruss/spacemouse-tinkercad/blob/master/spacenav.js
 			const isIdRecognized =
 				(gamepadName.indexOf("vendor: 046d") > -1 && gamepadName.indexOf("product: c6") > -1) ||
 				(gamepadName.indexOf("vendor: 256f") > -1 && gamepadName.indexOf("product: c6") > -1) ||
@@ -400,17 +395,97 @@
 				gamepadName.indexOf("space navigator") > -1 ||
 				gamepadName.indexOf("spacemouse") > -1 ||
 				gamepadName.indexOf("space mouse") > -1;
-
 			return isIdRecognized;
 		}
 
-		/**
-		 * @param {Gamepad} gamepad
-		 */
 		_isSparkFunProMicro(gamepad) {
 			const gamepadName = gamepad.id.toLowerCase();
-
 			return gamepadName.indexOf("vendor: 1b4f") > -1;
+		}
+
+		destroy() {}
+	}
+
+	class WebSocketSource {
+		constructor(url) {
+			this._url = url || "ws://127.0.0.1:18944";
+			this._axes = [0, 0, 0, 0, 0, 0];
+			this._connected = false;
+			this._ws = null;
+			this._reconnectTimer = null;
+			this._connect();
+		}
+
+		getData() {
+			let status;
+			if (!this._connected) {
+				status = "WS: Connecting...";
+			} else if (this._axes.every((v) => v === 0)) {
+				status = "WS: Idle";
+			} else {
+				status = "WS: Active";
+			}
+			return { status, axes: this._axes };
+		}
+
+		_connect() {
+			if (this._ws) {
+				this._ws.onopen = null;
+				this._ws.onmessage = null;
+				this._ws.onclose = null;
+				this._ws.onerror = null;
+				try {
+					this._ws.close();
+				} catch (_) {}
+			}
+
+			try {
+				this._ws = new WebSocket(this._url);
+			} catch (_) {
+				this._scheduleReconnect();
+				return;
+			}
+
+			this._ws.onopen = () => {
+				this._connected = true;
+			};
+
+			this._ws.onmessage = (event) => {
+				try {
+					const data = JSON.parse(event.data);
+					if (data.axes && data.axes.length === 6) {
+						this._axes = data.axes;
+					}
+				} catch (_) {}
+			};
+
+			this._ws.onclose = () => {
+				this._connected = false;
+				this._axes = [0, 0, 0, 0, 0, 0];
+				this._scheduleReconnect();
+			};
+
+			this._ws.onerror = () => {};
+		}
+
+		_scheduleReconnect() {
+			if (this._reconnectTimer) return;
+			this._reconnectTimer = setTimeout(() => {
+				this._reconnectTimer = null;
+				this._connect();
+			}, 2000);
+		}
+
+		destroy() {
+			if (this._reconnectTimer) {
+				clearTimeout(this._reconnectTimer);
+				this._reconnectTimer = null;
+			}
+			if (this._ws) {
+				this._ws.onclose = null;
+				this._ws.close();
+				this._ws = null;
+			}
 		}
 	}
 
@@ -536,6 +611,15 @@
 			return document.body.classList.contains(MINIMIZED_CLASSNAME);
 		}
 
+		get inputSource() {
+			return document.querySelector(`[name="inputSource"][value="websocket"]`).checked ? "websocket" : "gamepad";
+		}
+
+		set inputSource(mode) {
+			const el = document.querySelector(`[name="inputSource"][value="${mode}"]`);
+			if (el) el.checked = true;
+		}
+
 		get perspective() {
 			return document.querySelector(`[name="perspective"][value="2d"]`).checked ? "2d" : "3d";
 		}
@@ -574,8 +658,12 @@
 			}
 		}
 
-		usePreferences({ manipulation, perspective, panSensitivity, zoomSensitivity }) {
+		usePreferences({ inputSource, manipulation, perspective, panSensitivity, zoomSensitivity }) {
 			const oldPreferences = this.getPreferences();
+
+			if (inputSource !== undefined && oldPreferences.inputSource !== inputSource) {
+				this.inputSource = inputSource;
+			}
 
 			if (manipulation !== undefined && oldPreferences.manipulation !== manipulation) {
 				this.manipulation = manipulation;
@@ -598,6 +686,7 @@
 
 		resetPreferences() {
 			this.usePreferences({
+				inputSource: "gamepad",
 				manipulation: "scene",
 				perspective: "2d",
 				panSensitivity: 0,
@@ -608,12 +697,10 @@
 		}
 
 		getPreferences() {
-			const manipulation = this.manipulation;
-			const perspective = this.perspective;
-
 			return {
-				manipulation,
-				perspective,
+				inputSource: this.inputSource,
+				manipulation: this.manipulation,
+				perspective: this.perspective,
 				panSensitivity: document.querySelector('[name="panSensitivity"]').value,
 				zoomSensitivity: document.querySelector('[name="zoomSensitivity"]').value,
 			};
@@ -671,11 +758,11 @@
 	class Application {
 		constructor() {
 			this.userInterface = new UserInterface();
-			this.spaceNavigator = new SpaceNavigator();
 			this.physicsEngine = new PhysicsEngine();
+			this._inputSourceType = "gamepad";
+			this._inputSource = new SpaceNavigator();
 
 			window.requestAnimationFrame(() => this.update());
-
 			this.requestPreferences();
 		}
 
@@ -694,10 +781,21 @@
 			console.log("[ui] new preference available", preferences);
 			this.userInterface.usePreferences(preferences);
 			this.physicsEngine.usePreferences(preferences);
+
+			const newSource = preferences.inputSource || "gamepad";
+			if (newSource !== this._inputSourceType) {
+				this._inputSource.destroy();
+				this._inputSourceType = newSource;
+				if (newSource === "websocket") {
+					this._inputSource = new WebSocketSource();
+				} else {
+					this._inputSource = new SpaceNavigator();
+				}
+			}
 		}
 
 		update() {
-			const { status, axes } = this.spaceNavigator.getData();
+			const { status, axes } = this._inputSource.getData();
 			const [fX, fY, fZ] = axes;
 
 			this.physicsEngine.update([fX, fY, fZ]);
